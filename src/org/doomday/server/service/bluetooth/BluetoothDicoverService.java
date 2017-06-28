@@ -6,7 +6,7 @@ public class BluetoothDicoverService implements IDiscoverService{
 	
 	@Override
 	public void discover() {
-		// TODO Auto-generated method stub
+
 		
 	}
 

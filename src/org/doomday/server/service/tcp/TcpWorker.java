@@ -59,7 +59,7 @@ public class TcpWorker implements ITcpWorker,Runnable{
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
@@ -68,7 +68,10 @@ public class TcpWorker implements ITcpWorker,Runnable{
 
 	private void closeChan(SelectionKey key) throws IOException{
 		ProtocolProcessor pp = processors.get(key);
-				
+		Device d = pp.getDevice();
+		d.setConnectionStatus(Device.ConnectionStatus.OFFLINE);
+		SocketChannel chan = (SocketChannel) key.channel();
+		chan.close();
 	}
 
 
@@ -121,18 +124,11 @@ public class TcpWorker implements ITcpWorker,Runnable{
 			SelectionKey key = chan.register(selector, chan.validOps());
 			processors.put(key, ppf.createProcessor(device));			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 		
 	
-	private void onRead(SelectionKey key,String content){
-		
-	}
 	
-	private String onWrite(SelectionKey key){
-		return null;		
-	}
 
 }

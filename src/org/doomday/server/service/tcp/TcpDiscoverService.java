@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.UnknownHostException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.doomday.server.beans.device.Device;
-import org.doomday.server.service.IDeviceRepository;
+import org.doomday.server.model.IDeviceRepository;
 import org.doomday.server.service.IDiscoverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,7 +57,7 @@ public class TcpDiscoverService implements IDiscoverService{
 			mcastSock.receive(dp);
 			parsePacket(dp);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		
