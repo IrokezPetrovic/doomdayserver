@@ -23,44 +23,52 @@ public class TcpDiscoverService implements IDiscoverService{
 	String mcastGroup;
 	
 	@Autowired
-	ITcpWorker tcpWorker;
-	
-	
+	@Qualifier("discover.mcastport")
+	Integer mcastPort;
 	
 	@Autowired
+	ITcpWorker tcpWorker;
+			
+	@Autowired
 	IDeviceRepository deviceRepository;
-
 	
 	private MulticastSocket mcastSock;
 			
 	@PostConstruct
 	public void init() throws IOException{
-		InetAddress mcastAddr = InetAddress.getByName(mcastGroup);
-				
-		mcastSock = new MulticastSocket(27015);
-		//MulticastSocket mcastSock = new MulticastSocket(new InetSocketAddress("192.168.0.125", 27015));
+		InetAddress mcastAddr = InetAddress.getByName(mcastGroup);				
+		mcastSock = new MulticastSocket(mcastPort);
+		
 		mcastSock.joinGroup(mcastAddr);					
 		System.out.println("Discovery started");
+		ready = true;
 	}
+	private volatile boolean ready = false;
 	
-
 	@PreDestroy
+	
 	public void destroy(){
+		
+		System.out.println("TCP DISCOVER DESTROY");
+		ready = false;
 		mcastSock.close();
+						
 	}
 	
 	@Override
+	
 	public void discover() {
+		
 		byte[] buff = new byte[1024];
 		DatagramPacket dp = new DatagramPacket(buff, buff.length);
+		if (!ready) return;
 		try {
 			mcastSock.receive(dp);
 			parsePacket(dp);
 		} catch (IOException e) {
-
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
-		
+				
 	}
 	
 	private void parsePacket(DatagramPacket dp) {
@@ -78,10 +86,10 @@ public class TcpDiscoverService implements IDiscoverService{
 	}
 
 
-	private void onDiscover(String ipAddr,String devClass, String devSerial){
+	private void onDiscover(String ipAddr,String devClass, String devSerial){		
 		Device device = deviceRepository.getDevice(devClass,devSerial);
 		if (device.getPincode()!=null){
-			tcpWorker.appendDevice(device);
+			tcpWorker.appendDevice(ipAddr,device);
 		}
 	}
 	

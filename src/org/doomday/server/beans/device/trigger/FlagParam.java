@@ -1,6 +1,7 @@
 package org.doomday.server.beans.device.trigger;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +16,9 @@ public class FlagParam extends TriggerParam {
 		String[] targetFlags = v.split(",");
 		return flags.containsAll(Arrays.asList(targetFlags));
 		
+	}
+	public Set<String> getFlags() {
+		return Collections.unmodifiableSet(flags);
 	}
 
 }

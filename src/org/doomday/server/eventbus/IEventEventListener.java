@@ -1,5 +1,5 @@
 package org.doomday.server.eventbus;
 
-public interface IEventEventListener {
+public interface IEventEventListener extends IDeviceEventListener {
 
 }

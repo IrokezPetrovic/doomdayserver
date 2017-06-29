@@ -1,7 +1,5 @@
 package org.doomday.server.beans.device.trigger;
 
-import java.util.stream.Stream;
-
 public class TriggerMeta {
 	private TriggerParam[] params;
 	private String name;
@@ -23,7 +21,11 @@ public class TriggerMeta {
 			if (!this.params[i].validate(params[i]))
 				return false;
 		}
-		return false;
+		return true;
+	}
+
+	public TriggerParam[] getParams() {
+		return params;
 	}
 
 }

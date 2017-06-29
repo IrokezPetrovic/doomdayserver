@@ -21,6 +21,14 @@ public class IntSensorMeta extends SensorMeta{
 		
 		
 	}
+
+	public Integer getMin() {
+		return min;
+	}
+	
+	public Integer getMax() {
+		return max;
+	}
 		
 	
 	

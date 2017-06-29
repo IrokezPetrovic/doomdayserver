@@ -1,6 +1,7 @@
 package org.doomday.server.beans.device.trigger;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,6 +15,10 @@ public class ValParam extends TriggerParam {
 	@Override
 	public boolean validate(String v) {
 		return values.contains(v);
+	}
+	
+	public Set<String> getOptions() {
+		return Collections.unmodifiableSet(values);
 	}
 
 }

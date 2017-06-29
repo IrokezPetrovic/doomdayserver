@@ -1,5 +1,5 @@
 package org.doomday.server.eventbus;
 
-public interface ITriggerEventListener {
+public interface ITriggerEventListener extends IDeviceEventListener{
 	public void on(DeviceTriggerEvent e);
 }

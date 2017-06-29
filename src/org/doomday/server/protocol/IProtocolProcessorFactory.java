@@ -4,6 +4,6 @@ import org.doomday.server.beans.device.Device;
 
 public interface IProtocolProcessorFactory {
 
-	ProtocolProcessor createProcessor(Device device);
+	IProtocolProcessor createProcessor(Device device);
 
 }

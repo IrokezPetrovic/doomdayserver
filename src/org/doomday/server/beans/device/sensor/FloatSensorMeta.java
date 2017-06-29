@@ -21,4 +21,12 @@ public class FloatSensorMeta extends SensorMeta{
 		}
 	}
 
+	public Float getMax() {
+		return max;
+	}
+	
+	public Float getMin() {
+		return min;
+	}
+
 }

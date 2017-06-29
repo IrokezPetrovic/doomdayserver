@@ -12,13 +12,21 @@ public class Device {
 	
 	private String pincode;
 	private String name;
+
 	private String localAddr;
+	private String devSerial;
+	private String devClass;
 	private DeviceMeta meta;
 	private Map<String,String> sensorData = new HashMap<>();
 	private ConnectionStatus connectionStatus;
-	private String devSerial;
+
 	
 		
+	public Device(String devClass, String devSerial) {
+		this.devClass = devClass;
+		this.devSerial = devSerial;
+	}
+
 	public String getPincode() {
 		return pincode;
 	}
@@ -43,6 +51,15 @@ public class Device {
 
 	public String getDevSerial() {
 		return devSerial;
+	}
+
+	public void setMeta(DeviceMeta meta) {
+		this.meta = meta;		
+	}
+
+	public void setPincode(String pincode) {
+		this.pincode = pincode;
+		
 	}
 
 

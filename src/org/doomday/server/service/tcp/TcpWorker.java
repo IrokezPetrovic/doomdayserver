@@ -16,44 +16,56 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 
 import org.doomday.server.beans.device.Device;
+import org.doomday.server.protocol.IProtocolProcessor;
 import org.doomday.server.protocol.IProtocolProcessorFactory;
-import org.doomday.server.protocol.ProtocolProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class TcpWorker implements ITcpWorker,Runnable{
-	private Map<SelectionKey, ProtocolProcessor> processors = new HashMap<>();
+	private Map<SelectionKey, IProtocolProcessor> processors = new HashMap<>();
 	
 	@Autowired
 	IProtocolProcessorFactory ppf;
 	
+	@Autowired
+	@Qualifier("tcp.port")
+	Integer tcpPort;
+	
 	@PostConstruct
-	public void init(){
+	public void init() throws IOException{
+		System.out.println("TCPWORKER-POSTCONSTRUCT");
+		selector = SelectorProvider.provider().openSelector();
+		
 		Thread t = new Thread(this);
 		t.start();
 	}
 	
-	Selector selector;
+	Selector selector = null;
 	
 	@Override
 	public void run() {
 		try {
-			selector = SelectorProvider.provider().openSelector();
-			while(selector.select()>-1){
+			//System.out.println("RUN");
+			//selector = SelectorProvider.provider().openSelector();
+			while(selector.select(1000)>-1){
+//				System.out.println("SELECT");
 				Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
 				while(iterator.hasNext()){
 					SelectionKey key = iterator.next();
-					iterator.remove();
-					
+					iterator.remove();					
 					try{
 						if (key.isValid()){
 							if (key.isReadable()){
+//								System.out.println("READ");
 								readChan(key);
 							}
 							if (key.isWritable()){
+//								System.out.println("WRITE");
 								writeChan(key);
 							}
 						}
 					} catch (IOException e){
+						System.out.println("CLOSE");
 						closeChan(key);
 					}
 				}
@@ -62,12 +74,15 @@ public class TcpWorker implements ITcpWorker,Runnable{
 
 			e.printStackTrace();
 		}
+		System.out.println("FINAL((");
 	}
 	
 	
 
 	private void closeChan(SelectionKey key) throws IOException{
-		ProtocolProcessor pp = processors.get(key);
+		IProtocolProcessor pp = processors.get(key);
+		if (pp==null)
+			return;
 		Device d = pp.getDevice();
 		d.setConnectionStatus(Device.ConnectionStatus.OFFLINE);
 		SocketChannel chan = (SocketChannel) key.channel();
@@ -78,7 +93,9 @@ public class TcpWorker implements ITcpWorker,Runnable{
 
 	private void writeChan(SelectionKey key) throws IOException{
 
-		ProtocolProcessor pp = processors.get(key);
+		IProtocolProcessor pp = processors.get(key);
+		if (pp==null)
+			return;
 		Queue<String> q = pp.getWriteQueue();
 		
 		if (q.size()==0){
@@ -99,7 +116,9 @@ public class TcpWorker implements ITcpWorker,Runnable{
 
 
 	private void readChan(SelectionKey key) throws IOException{
-		ProtocolProcessor pp = processors.get(key);
+		IProtocolProcessor pp = processors.get(key);
+		if (pp==null)
+			return;
 		SocketChannel chan = (SocketChannel) key.channel();
 		ByteBuffer buf = ByteBuffer.allocate(4096);
 		int readed = chan.read(buf);
@@ -117,13 +136,18 @@ public class TcpWorker implements ITcpWorker,Runnable{
 
 
 	@Override
-	public void appendDevice(Device device) {		
+	public void appendDevice(String ipAddr,Device device) {	
+		System.out.println("Append device");
 		try {
-			SocketChannel chan = SocketChannel.open(new InetSocketAddress(device.getLocalAddr(), 22351));
+			SocketChannel chan = SocketChannel.open(new InetSocketAddress(ipAddr, tcpPort));			
+			System.out.println("Create connection1");
 			chan.configureBlocking(false);
+			System.out.println("Create connection2");
 			SelectionKey key = chan.register(selector, chan.validOps());
+			System.out.println("Create connection3");
 			processors.put(key, ppf.createProcessor(device));			
 		} catch (IOException e) {
+			System.out.println("Create connection4");
 			e.printStackTrace();
 		}
 	}

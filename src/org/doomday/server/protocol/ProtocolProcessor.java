@@ -27,6 +27,7 @@ import org.doomday.server.beans.device.trigger.StrParam;
 import org.doomday.server.beans.device.trigger.TriggerMeta;
 import org.doomday.server.beans.device.trigger.TriggerParam;
 import org.doomday.server.beans.device.trigger.ValParam;
+import org.doomday.server.eventbus.DeviceSensorEvent;
 import org.doomday.server.eventbus.IDeviceEventBus;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,21 +49,29 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	
 	public ProtocolProcessor(Device device) {
 		this.device = device;
+		System.out.println("PP CONSTRUCTOR");
 	}
 	
 	@PostConstruct
 	public void init(){
+		msgQueue.add("CONNECT "+device.getPincode());
+		
 		eventBus.onTrigger(device.getDevSerial(), (e)->{
 			DeviceMeta meta = device.getMeta();
 			if (meta==null) return;
+			
 			TriggerMeta tm = meta.getTrigger(e.getTrigger());
 			if (tm==null) return;
+			
 			if (tm.validate(e.getParams())){				
 				msgQueue.add(e.getTrigger()+" "+Stream.of(e.getParams()).reduce((s,v)->s+" "+v));
+			} else {
+				
 			}
 		});
 		
-		msgQueue.add("CONNECT "+device.getPincode());
+		
+		System.out.println("PP PostConstruct");
 		
 	}
 	
@@ -117,6 +126,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		SensorMeta s = device.getMeta().getSensor(sensorName);
 		if (s.validate(sensorValue)){
 			device.setData(sensorName,sensorValue);
+			eventBus.emit(device.getDevSerial(), new DeviceSensorEvent(sensorName,sensorValue));
 		}
 	}
 
@@ -142,20 +152,24 @@ public class ProtocolProcessor implements IProtocolProcessor{
 			}			
 		}
 		
-		TriggerMeta tm = new TriggerMeta(name,params.toArray(new TriggerParam[0]));
+		TriggerMeta tm = new TriggerMeta(name,params.toArray(new TriggerParam[0]));		
 		DeviceMeta meta = device.getMeta();
+		if (meta==null){
+			meta = new DeviceMeta();
+			device.setMeta(meta);					
+		}
 		meta.addTrigger(tm);
 		}
 
 	private TriggerParam parseFlagParam(String name, StringTokenizer st) {
 		String s = st.nextToken();
-		String[] ss = s.substring(1,s.length()-2).split(",");
+		String[] ss = s.substring(1,s.length()-1).split(",");
 		return new FlagParam(name, ss);
 	}
 
 	private TriggerParam parseValParam(String name, StringTokenizer st) {
 		String s = st.nextToken();
-		String[] ss = s.substring(1,s.length()-2).split(",");
+		String[] ss = s.substring(1,s.length()-1).split(",");
 		return new ValParam(name, ss);
 	}
 
@@ -169,13 +183,13 @@ public class ProtocolProcessor implements IProtocolProcessor{
 
 	private TriggerParam parseFloatParam(String name, StringTokenizer st) {
 		String s = st.nextToken();
-		String[] ss = s.substring(1,s.length()-2).split(",");
+		String[] ss = s.substring(1,s.length()-1).split(",");
 		return new FloatParam(name, Float.parseFloat(ss[0]), Float.parseFloat(ss[1]));
 	}
 
 	private TriggerParam parseIntParam(String name, StringTokenizer st) {
 		String s = st.nextToken();
-		String[] ss = s.substring(1,s.length()-2).split(",");
+		String[] ss = s.substring(1,s.length()-1).split(",");
 		return new IntParam(name, Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
 	}
 
@@ -206,6 +220,10 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		}
 		if (s!=null){
 			DeviceMeta meta = device.getMeta();
+			if (meta==null){
+				meta = new DeviceMeta();
+				device.setMeta(meta);
+			}
 			meta.addSensor(s);
 		}
 		
@@ -220,7 +238,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	
 	private SensorMeta parseFlagSensor(String name, StringTokenizer st) {
 		String valuesStringWithBrackets = st.nextToken();
-		String commaSeparatedValues = valuesStringWithBrackets.substring(1, valuesStringWithBrackets.length()-2);		
+		String commaSeparatedValues = valuesStringWithBrackets.substring(1, valuesStringWithBrackets.length()-1);		
 		return new FlagSensorMeta(name, commaSeparatedValues.split(","));
 	}
 
@@ -233,7 +251,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	 */
 	private SensorMeta parseValSensor(String name, StringTokenizer st) {	
 		String valuesStringWithBrackets = st.nextToken();
-		String commaSeparatedValues = valuesStringWithBrackets.substring(1, valuesStringWithBrackets.length()-2);		
+		String commaSeparatedValues = valuesStringWithBrackets.substring(1, valuesStringWithBrackets.length()-1);		
 		return new ValSensorMeta(name, commaSeparatedValues.split(","));
 	}
 
@@ -267,7 +285,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	 */
 	private SensorMeta parseFloatSensor(String name, StringTokenizer st) {
 		String s = st.nextToken();
-		String[] ss = s.substring(1,s.length()-2).split(",");
+		String[] ss = s.substring(1,s.length()-1).split(",");
 		return new FloatSensorMeta(name, Float.parseFloat(ss[0]), Float.parseFloat(ss[1]));
 	}
 
@@ -280,7 +298,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	 */
 	private IntSensorMeta parseIntSensor(String name, StringTokenizer st) {
 		String s = st.nextToken();
-		String[] ss = s.substring(1,s.length()-2).split(",");	
+		String[] ss = s.substring(1,s.length()-1).split(",");	
 		return new IntSensorMeta(name, Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
 	}
 
@@ -292,4 +310,6 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		return device;
 		
 	}
+
+	
 }

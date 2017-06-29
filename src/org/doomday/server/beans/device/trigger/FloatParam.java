@@ -16,5 +16,13 @@ public class FloatParam extends TriggerParam {
 			return false;
 		}
 	}
+	public Float getMin() {
+		return min;
+	}
+	public Float getMax() {
+		return max;
+	}
+	
+	
 
 }
