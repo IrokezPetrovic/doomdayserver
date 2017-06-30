@@ -20,5 +20,9 @@ public class ValParam extends TriggerParam {
 	public Set<String> getOptions() {
 		return Collections.unmodifiableSet(values);
 	}
+	@Override
+	public String getType() {
+		return "val";
+	}
 
 }

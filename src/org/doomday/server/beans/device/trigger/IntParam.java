@@ -27,6 +27,11 @@ public class IntParam extends TriggerParam{
 	public Integer getMax() {
 		return max;
 	}
+
+	@Override
+	public String getType() {
+		return "int";
+	}
 	
 	
 	

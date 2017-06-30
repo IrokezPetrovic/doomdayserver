@@ -1,5 +1,6 @@
 package tcp;
 
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import org.doomday.server.beans.device.Device;
@@ -112,6 +113,18 @@ public class DiscoverAndConnectTest {
 					Device d = new Device(devClass,devSerial);
 					d.setPincode("1234");
 					return d;
+				}
+
+				@Override
+				public Collection<Device> listDevices() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public void updateDevice(Device d) {
+					// TODO Auto-generated method stub
+					
 				}
 			};
 		}

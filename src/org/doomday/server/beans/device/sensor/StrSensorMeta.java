@@ -11,4 +11,9 @@ public class StrSensorMeta extends SensorMeta{
 		return sensorValue!=null&&!sensorValue.isEmpty();
 	}
 
+	@Override
+	public String getType() {
+		return "str";
+	}
+
 }

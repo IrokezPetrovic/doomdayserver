@@ -20,5 +20,10 @@ public class FlagSensorMeta extends SensorMeta{
 	public Set<String> getFlags() {
 		return Collections.unmodifiableSet(flags);
 	}
+	
+	@Override
+	public String getType() {
+		return "flag";
+	}
 
 }

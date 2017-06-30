@@ -107,12 +107,17 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		if (state!=ProtocolState.DISAUTHED) throw new IllegalStateException("Illegal state to parse ACCEPT");
 		this.state = ProtocolState.AUTHED;
 		
+		if (device.getMeta()==null){
+			msgQueue.add("INFO");
+		} else {
+			msgQueue.add("READY");
+		}
+		
 	}
 	
 	private void parseReady(StringTokenizer st) {
 		if (state!=ProtocolState.AUTHED) throw new IllegalStateException("Illegal state to parse READY");
-		this.state = ProtocolState.READY;
-		
+		this.state = ProtocolState.READY;		
 	}
 	
 	/**

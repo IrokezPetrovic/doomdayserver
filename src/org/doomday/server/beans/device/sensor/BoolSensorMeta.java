@@ -11,4 +11,9 @@ public class BoolSensorMeta extends SensorMeta{
 		return sensorValue!=null&&(sensorValue.equalsIgnoreCase("TRUE")||sensorValue.equalsIgnoreCase("FALSE"));
 	}
 
+	@Override
+	public String getType() {
+		return "bool";
+	}
+
 }

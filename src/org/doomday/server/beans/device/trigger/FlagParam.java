@@ -20,5 +20,9 @@ public class FlagParam extends TriggerParam {
 	public Set<String> getFlags() {
 		return Collections.unmodifiableSet(flags);
 	}
+	@Override
+	public String getType() {
+		return "flag";
+	}
 
 }

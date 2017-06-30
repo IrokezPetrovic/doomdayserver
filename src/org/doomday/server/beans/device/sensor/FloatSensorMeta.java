@@ -29,4 +29,9 @@ public class FloatSensorMeta extends SensorMeta{
 		return min;
 	}
 
+	@Override
+	public String getType() {
+		return "float";
+	}
+
 }

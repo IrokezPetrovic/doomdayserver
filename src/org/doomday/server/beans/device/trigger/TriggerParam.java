@@ -12,5 +12,6 @@ public abstract class TriggerParam {
 	}
 
 	public abstract boolean validate(String v);
+	public abstract String getType();
 	
 }

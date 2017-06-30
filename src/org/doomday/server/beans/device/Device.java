@@ -3,7 +3,7 @@ package org.doomday.server.beans.device;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Device {
+public class Device implements Mergeable<Device>{
 	public static enum ConnectionStatus{
 		ONLINE,
 		OFFLINE,
@@ -12,15 +12,19 @@ public class Device {
 	
 	private String pincode;
 	private String name;
-
 	private String localAddr;
 	private String devSerial;
 	private String devClass;
+	
 	private DeviceMeta meta;
 	private Map<String,String> sensorData = new HashMap<>();
-	private ConnectionStatus connectionStatus;
+	private ConnectionStatus connectionStatus = ConnectionStatus.DISCOVERED;
 
-	
+	public void merge(Device d) {
+		this.pincode = d.pincode==null?d.pincode:this.pincode;
+		this.name = d.name==null?d.name:this.name;
+		this.meta = d.getMeta()==null?d.getMeta():this.meta;
+	}
 		
 	public Device(String devClass, String devSerial) {
 		this.devClass = devClass;
@@ -61,7 +65,21 @@ public class Device {
 		this.pincode = pincode;
 		
 	}
+	
+	public String getDevClass() {
+		return devClass;
+	}
+	
+	public ConnectionStatus getConnectionStatus() {
+		return connectionStatus;
+	}
+	
+	public String getName() {
+		return name;
+	}
 
+	
+	
 
 
 	

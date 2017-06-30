@@ -11,4 +11,9 @@ public class StrParam extends TriggerParam {
 		return true;
 	}
 
+	@Override
+	public String getType() {
+		return "str";
+	}
+
 }

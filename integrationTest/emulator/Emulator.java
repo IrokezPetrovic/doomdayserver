@@ -14,6 +14,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Stream;
 
+import org.doomday.server.beans.device.sensor.IntSensorMeta;
+import org.doomday.server.beans.device.sensor.SensorMeta;
+import org.doomday.server.beans.device.trigger.TriggerMeta;
+
 public class Emulator implements Runnable{	
 	private String devSerial;
 	private String devClass;
@@ -185,6 +189,16 @@ public class Emulator implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
+
+	public Emulator sensor(SensorMeta sensorMeta) {
+		
+		return this;
+	}
+
+	public Emulator trigger(TriggerMeta triggerMeta) {
+		return this;
 		
 	}
 

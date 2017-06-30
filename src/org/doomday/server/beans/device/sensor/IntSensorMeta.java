@@ -29,6 +29,11 @@ public class IntSensorMeta extends SensorMeta{
 	public Integer getMax() {
 		return max;
 	}
+
+	@Override
+	public String getType() {
+		return "int";
+	}
 		
 	
 	

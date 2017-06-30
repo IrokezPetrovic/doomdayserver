@@ -22,4 +22,9 @@ public class ValSensorMeta extends SensorMeta{
 		return Collections.unmodifiableSet(values);
 	}
 
+	@Override
+	public String getType() {
+		return "val";
+	}
+
 }

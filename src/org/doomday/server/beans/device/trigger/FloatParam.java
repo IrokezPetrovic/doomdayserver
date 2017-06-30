@@ -22,6 +22,10 @@ public class FloatParam extends TriggerParam {
 	public Float getMax() {
 		return max;
 	}
+	@Override
+	public String getType() {
+		return "float";
+	}
 	
 	
 

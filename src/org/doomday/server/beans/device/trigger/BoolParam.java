@@ -11,4 +11,9 @@ public class BoolParam extends TriggerParam {
 		return v.equalsIgnoreCase("TRUE")||v.equalsIgnoreCase("FALSE");
 	}
 
+	@Override
+	public String getType() {
+		return "bool";
+	}
+
 }
