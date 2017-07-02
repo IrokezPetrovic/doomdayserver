@@ -2,6 +2,8 @@ package emulator;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ProtocolFamily;
+import java.net.StandardProtocolFamily;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -14,7 +16,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Stream;
 
-import org.doomday.server.beans.device.sensor.IntSensorMeta;
 import org.doomday.server.beans.device.sensor.SensorMeta;
 import org.doomday.server.beans.device.trigger.TriggerMeta;
 
@@ -23,6 +24,7 @@ public class Emulator implements Runnable{
 	private String devClass;
 	private InetSocketAddress discoveryAddr;
 	private int tcpPort;
+	private final int mcastPort;
 	
 	public Emulator(String devSerial, String devClass,String mcastAddr,int mcastPort,int tcpPort) {
 		super();
@@ -30,6 +32,7 @@ public class Emulator implements Runnable{
 		this.devClass = devClass;
 		discoveryAddr = new InetSocketAddress(mcastAddr, mcastPort);
 		this.tcpPort = tcpPort;
+		this.mcastPort = mcastPort;
 		
 	}
 	
@@ -63,11 +66,19 @@ public class Emulator implements Runnable{
 		discoveryMessage.put(discoveryStringBytes);	
 		discoveryMessage.flip();	
 		DatagramChannel chan = (DatagramChannel) key.channel();
-		try {
+		
+		try {			
 			chan.send(discoveryMessage, discoveryAddr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		
+		try {
+			System.out.println(chan.getLocalAddress());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 	
@@ -147,7 +158,8 @@ public class Emulator implements Runnable{
 	public void run() {
 		try {
 			Selector selector = SelectorProvider.provider().openSelector();
-			DatagramChannel discoveryChannel = DatagramChannel.open();
+			DatagramChannel discoveryChannel = DatagramChannel.open(StandardProtocolFamily.INET); 			
+			//DatagramChannel.open(StandardProtocolFamily.INET);
 			discoveryChannel.configureBlocking(false);
 			discoveryKey = discoveryChannel.register(selector, discoveryChannel.validOps());
 			

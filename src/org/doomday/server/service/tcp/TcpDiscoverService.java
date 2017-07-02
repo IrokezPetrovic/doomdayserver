@@ -3,6 +3,7 @@ package org.doomday.server.service.tcp;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.nio.channels.DatagramChannel;
@@ -43,7 +44,7 @@ public class TcpDiscoverService implements IDiscoverService,Runnable{
 	@PostConstruct
 	public void init() throws IOException{				
 		InetAddress mcastAddr = InetAddress.getByName(mcastGroup);		
-		mcastSock = new MulticastSocket(mcastPort);		
+		mcastSock = new MulticastSocket(new InetSocketAddress("0.0.0.0", mcastPort));				
 		mcastSock.joinGroup(mcastAddr);					
 		System.out.println("Discovery started, listen "+mcastGroup+":"+mcastPort);
 		t = new Thread(this);
