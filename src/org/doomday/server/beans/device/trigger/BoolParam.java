@@ -15,5 +15,10 @@ public class BoolParam extends TriggerParam {
 	public String getType() {
 		return "bool";
 	}
+	
+	@Override
+	public String toString() {
+		return "BOOL "+getName();
+	}
 
 }

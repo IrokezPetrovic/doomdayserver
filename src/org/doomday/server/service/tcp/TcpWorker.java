@@ -33,7 +33,7 @@ public class TcpWorker implements ITcpWorker,Runnable{
 	
 	@PostConstruct
 	public void init() throws IOException{
-		System.out.println("TCPWORKER-POSTCONSTRUCT");
+		
 		selector = SelectorProvider.provider().openSelector();
 		
 		Thread t = new Thread(this);
@@ -47,7 +47,7 @@ public class TcpWorker implements ITcpWorker,Runnable{
 		try {
 			//System.out.println("RUN");
 			//selector = SelectorProvider.provider().openSelector();
-			while(selector.select(1000)>-1){
+			while(selector.select(1)>-1){
 //				System.out.println("SELECT");
 				Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
 				while(iterator.hasNext()){
@@ -65,7 +65,7 @@ public class TcpWorker implements ITcpWorker,Runnable{
 							}
 						}
 					} catch (IOException e){
-						System.out.println("CLOSE");
+		
 						closeChan(key);
 					}
 				}
@@ -74,7 +74,7 @@ public class TcpWorker implements ITcpWorker,Runnable{
 
 			e.printStackTrace();
 		}
-		System.out.println("FINAL((");
+		
 	}
 	
 	
@@ -123,8 +123,7 @@ public class TcpWorker implements ITcpWorker,Runnable{
 		ByteBuffer buf = ByteBuffer.allocate(4096);
 		int readed = chan.read(buf);
 		if (readed>0){
-			String payload = new String(buf.array());
-			System.out.println(payload);
+			String payload = new String(buf.array());			
 			Stream.of(payload.trim().split("\n"))
 			.map(String::trim)
 			.forEach(pp::read);				
@@ -139,15 +138,11 @@ public class TcpWorker implements ITcpWorker,Runnable{
 	public void appendDevice(String ipAddr,Device device) {	
 		System.out.println("Append device");
 		try {
-			SocketChannel chan = SocketChannel.open(new InetSocketAddress(ipAddr, tcpPort));			
-			System.out.println("Create connection1");
-			chan.configureBlocking(false);
-			System.out.println("Create connection2");
-			SelectionKey key = chan.register(selector, chan.validOps());
-			System.out.println("Create connection3");
+			SocketChannel chan = SocketChannel.open(new InetSocketAddress(ipAddr, tcpPort));						
+			chan.configureBlocking(false);			
+			SelectionKey key = chan.register(selector, chan.validOps());			
 			processors.put(key, ppf.createProcessor(device));			
-		} catch (IOException e) {
-			System.out.println("Create connection4");
+		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 	}

@@ -27,6 +27,11 @@ public class FloatParam extends TriggerParam {
 		return "float";
 	}
 	
+	@Override
+	public String toString() {
+		return String.format("FLOAT %s (%f,%f)", getName(),min,max);
+	}
+	
 	
 
 }

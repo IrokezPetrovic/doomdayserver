@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class ValParam extends TriggerParam {
 	
@@ -23,6 +24,16 @@ public class ValParam extends TriggerParam {
 	@Override
 	public String getType() {
 		return "val";
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("VAL ");
+		sb.append(getName())
+		.append(" (");
+		Stream.of(values).forEach(sb::append);
+		sb.append(")");
+		return sb.toString();
 	}
 
 }

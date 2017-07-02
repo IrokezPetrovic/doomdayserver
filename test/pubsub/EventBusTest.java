@@ -1,6 +1,7 @@
 package pubsub;
 
 import org.doomday.server.eventbus.EventBus;
+import org.doomday.server.eventbus.IEventBus;
 import org.doomday.server.eventbus.Reciever;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ public class EventBusTest {
 	
 	@Test
 	public void test(){
-		EventBus bus = new EventBus();
+		IEventBus bus = new EventBus();
 		RecieverClass rec = new RecieverClass();
 		bus.subscribe(rec);
 		bus.subscribe(new Sub());

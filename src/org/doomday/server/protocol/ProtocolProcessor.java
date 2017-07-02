@@ -8,6 +8,7 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.DeviceMeta;
@@ -26,6 +27,9 @@ import org.doomday.server.beans.device.trigger.StrParam;
 import org.doomday.server.beans.device.trigger.TriggerMeta;
 import org.doomday.server.beans.device.trigger.TriggerParam;
 import org.doomday.server.beans.device.trigger.ValParam;
+import org.doomday.server.eventbus.IEventBus;
+import org.doomday.server.eventbus.Reciever;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 
@@ -40,16 +44,20 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	private ProtocolState state = ProtocolState.DISAUTHED;
 	private final Queue<String> msgQueue = new ArrayDeque<>();
 	
+	@Autowired
+	IEventBus eventBus;
 	
 	
 	public ProtocolProcessor(Device device) {
 		this.device = device;
-		System.out.println("PP CONSTRUCTOR");
+		
 	}
 	
+	
+	
+	
 	@PostConstruct
-	public void init(){
-		msgQueue.add("CONNECT "+device.getPincode());
+	public void init(){		
 		/*
 		eventBus.onTrigger(device.getDevSerial(), (e)->{
 			DeviceMeta meta = device.getMeta();
@@ -65,13 +73,13 @@ public class ProtocolProcessor implements IProtocolProcessor{
 			}
 		});
 		*/
-		
-		
-		System.out.println("PP PostConstruct");
-		
+		if (device.getPincode()!=null){
+			msgQueue.add("CONNECT "+device.getPincode());
+		}
 	}
 	
 	
+			
 	public void read(String content){
 		StringTokenizer st = new StringTokenizer(content, " ");
 		String cmd = st.nextToken();

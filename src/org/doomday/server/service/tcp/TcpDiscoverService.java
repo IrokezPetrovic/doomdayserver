@@ -43,10 +43,10 @@ public class TcpDiscoverService implements IDiscoverService,Runnable{
 	
 	@PostConstruct
 	public void init() throws IOException{				
-		InetAddress mcastAddr = InetAddress.getByName(mcastGroup);		
-		mcastSock = new MulticastSocket(new InetSocketAddress("0.0.0.0", mcastPort));				
+		InetAddress mcastAddr = InetAddress.getByName(mcastGroup);			
+		mcastSock = new MulticastSocket(new InetSocketAddress(mcastPort));				
 		mcastSock.joinGroup(mcastAddr);					
-		System.out.println("Discovery started, listen "+mcastGroup+":"+mcastPort);
+		
 		t = new Thread(this);
 		t.start();
 	}
@@ -54,7 +54,7 @@ public class TcpDiscoverService implements IDiscoverService,Runnable{
 	
 	@PreDestroy	
 	public void destroy(){		
-		System.out.println("TCP DISCOVER DESTROY");		
+				
 		mcastSock.close();	
 		t.interrupt();
 	}
@@ -64,7 +64,7 @@ public class TcpDiscoverService implements IDiscoverService,Runnable{
 	}
 	
 	public void $discover() {
-		System.out.println("DISCOVER...");
+		
 		byte[] buff = new byte[1024];
 		DatagramPacket dp = new DatagramPacket(buff, buff.length);		
 		try {

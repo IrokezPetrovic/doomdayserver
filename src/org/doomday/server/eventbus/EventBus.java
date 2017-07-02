@@ -11,10 +11,14 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class EventBus {
+public class EventBus implements IEventBus {
 	SubscriberList subs = new SubscriberList();
 	ExecutorService executor = Executors.newFixedThreadPool(4);
 	
+	/* (non-Javadoc)
+	 * @see org.doomday.server.eventbus.IEventBus#subscribe(java.lang.Object)
+	 */
+	@Override
 	public Subscription subscribe(Object subscriber){		
 		List<Class<?>> targetClasses = Stream.of(subscriber.getClass().getMethods())		
 		.filter(m->m.isAnnotationPresent(Reciever.class))		
@@ -27,14 +31,25 @@ public class EventBus {
 		return new Subscription(this, subscriber, targetClasses);
 		
 	}
-		
-	
+			
+	/* (non-Javadoc)
+	 * @see org.doomday.server.eventbus.IEventBus#emit(java.lang.Object)
+	 */
+	@Override
 	public void emit(Object event){
 		this.emit("",event,false);
 	}
+	/* (non-Javadoc)
+	 * @see org.doomday.server.eventbus.IEventBus#emit(java.lang.String, java.lang.Object)
+	 */
+	@Override
 	public void emit(String route,Object event){
 		this.emit(route, event, false);
 	}
+	/* (non-Javadoc)
+	 * @see org.doomday.server.eventbus.IEventBus#emit(java.lang.String, java.lang.Object, boolean)
+	 */
+	@Override
 	public void emit(String route,Object event,boolean propogation){
 		Class<?> eClass = event.getClass();
 		do{

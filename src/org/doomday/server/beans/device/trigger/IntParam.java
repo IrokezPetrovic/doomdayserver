@@ -33,7 +33,10 @@ public class IntParam extends TriggerParam{
 		return "int";
 	}
 	
-	
+	@Override
+	public String toString() {
+		return String.format("INT %s (%d,%d)", getName(),min,max);
+	}
 	
 	
 

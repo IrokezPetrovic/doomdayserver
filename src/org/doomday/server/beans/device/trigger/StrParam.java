@@ -15,5 +15,10 @@ public class StrParam extends TriggerParam {
 	public String getType() {
 		return "str";
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("STR %s", getName());
+	}
 
 }

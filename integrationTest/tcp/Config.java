@@ -9,7 +9,7 @@ public class Config {
 	@Bean
 	@Qualifier("discover.mcastgroup")
 	public String macastGroup(){
-		return "238.40.49.1";
+		return "239.12.13.14";
 	}
 	
 	@Bean

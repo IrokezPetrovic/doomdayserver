@@ -18,22 +18,24 @@ import java.util.stream.Stream;
 
 import org.doomday.server.beans.device.sensor.SensorMeta;
 import org.doomday.server.beans.device.trigger.TriggerMeta;
+import org.springframework.expression.spel.ast.Selection;
+
+import emulator.DeviceModel.Status;
 
 public class Emulator implements Runnable{	
 	private String devSerial;
 	private String devClass;
 	private InetSocketAddress discoveryAddr;
-	private int tcpPort;
-	private final int mcastPort;
+	private int tcpPort;	
+	private DeviceModel model;
 	
-	public Emulator(String devSerial, String devClass,String mcastAddr,int mcastPort,int tcpPort) {
+	public Emulator(String devSerial, String devClass,String pincode,String mcastAddr, int mcastPort, int tcpPort) {
 		super();
 		this.devSerial = devSerial;
 		this.devClass = devClass;
 		discoveryAddr = new InetSocketAddress(mcastAddr, mcastPort);
-		this.tcpPort = tcpPort;
-		this.mcastPort = mcastPort;
-		
+		this.tcpPort = tcpPort;	
+		model = new DeviceModel(pincode);
 	}
 	
 	private Thread t;
@@ -57,29 +59,26 @@ public class Emulator implements Runnable{
 			return;
 		if (!key.isValid()||!key.isWritable())
 			return;
-		System.out.println("SIM: Send discovery packet to "+discoveryAddr);
+		System.out.println("EMULATOR : Send discovery packet to "+discoveryAddr);
 		discoverySendEnabled = false;
 		
 		byte[] discoveryStringBytes = (devClass+" "+devSerial).getBytes();
+		
 		ByteBuffer discoveryMessage = ByteBuffer.allocate(discoveryStringBytes.length);
 		discoveryMessage.clear();
 		discoveryMessage.put(discoveryStringBytes);	
 		discoveryMessage.flip();	
 		DatagramChannel chan = (DatagramChannel) key.channel();
-		
-		try {			
-			chan.send(discoveryMessage, discoveryAddr);
+		int sended = 0;
+		try {						
+			sended = chan.send(discoveryMessage, discoveryAddr);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		try {
-			System.out.println(chan.getLocalAddress());
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		
 	}
 	
 	private void processServerKey(SelectionKey key) throws IOException{
@@ -87,11 +86,11 @@ public class Emulator implements Runnable{
 			ServerSocketChannel chan = (ServerSocketChannel) key.channel();
 			if (clientKey!=null){
 				chan.accept().close();
-			} else {				
+			} else {	
+				model.setStatus(Status.CONNECTED);
 				SocketChannel clientChan = chan.accept();
 				clientChan.configureBlocking(false);
-				clientKey = clientChan.register(key.selector(), SelectionKey.OP_READ|SelectionKey.OP_WRITE);
-				System.out.println("ACCEPTED CONNECTION ");
+				clientKey = clientChan.register(key.selector(), SelectionKey.OP_READ|SelectionKey.OP_WRITE);				
 			}
 		}
 		
@@ -104,8 +103,7 @@ public class Emulator implements Runnable{
 		try{
 			if (key.isReadable()){
 				read(key);
-			}
-			
+			}			
 			if (key.isWritable()){
 				write(key);
 			}
@@ -121,7 +119,6 @@ public class Emulator implements Runnable{
 	}
 	
 	private void read(SelectionKey key) throws IOException{
-//		System.out.println("EMULATOR: Read");
 		SocketChannel chan = (SocketChannel) key.channel();
 		ByteBuffer buf = ByteBuffer.allocate(4096);
 		int readed = chan.read(buf);
@@ -130,7 +127,8 @@ public class Emulator implements Runnable{
 			Stream.of(payload.trim().split("\n"))
 			.map(String::trim)
 			.forEach((s)->{
-				System.out.println("EMULATOR: "+s);
+				System.out.println("EMULATOR <=:"+s);
+				model.parse(s);
 			});				
 		} else {
 			closeChan(key);
@@ -140,12 +138,24 @@ public class Emulator implements Runnable{
 	
 	private void write(SelectionKey key) throws IOException{
 		//System.out.println("EMULATOR: WRite");
+		String line = model.getQueue().poll();
+		if (line!=null){
+			System.out.println("EMULATOR =>:"+line);
+			byte[] bytes = (line+"\n").getBytes();
+			SocketChannel chan = (SocketChannel) key.channel();
+			ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
+			buffer.clear();
+			buffer.put(bytes);
+			buffer.flip();
+			chan.write(buffer);
+		}
+		
 	}
 	
 	private void closeChan(SelectionKey key){
 		clientKey = null;
 		SocketChannel chan = (SocketChannel) key.channel();
-		
+		model.setStatus(Status.DISCONNECTED);
 		try {
 			chan.close();
 		} catch (IOException e) {
@@ -158,10 +168,9 @@ public class Emulator implements Runnable{
 	public void run() {
 		try {
 			Selector selector = SelectorProvider.provider().openSelector();
-			DatagramChannel discoveryChannel = DatagramChannel.open(StandardProtocolFamily.INET); 			
-			//DatagramChannel.open(StandardProtocolFamily.INET);
-			discoveryChannel.configureBlocking(false);
-			discoveryKey = discoveryChannel.register(selector, discoveryChannel.validOps());
+			DatagramChannel discoveryChannel = DatagramChannel.open(StandardProtocolFamily.INET);						
+			discoveryChannel.configureBlocking(false);			
+			discoveryKey = discoveryChannel.register(selector, SelectionKey.OP_WRITE);
 			
 			ServerSocketChannel serverChannel = ServerSocketChannel.open();
 			serverChannel.configureBlocking(false);
@@ -205,13 +214,13 @@ public class Emulator implements Runnable{
 	}
 
 	public Emulator sensor(SensorMeta sensorMeta) {
-		
+		model.addSensor(sensorMeta);
 		return this;
 	}
 
 	public Emulator trigger(TriggerMeta triggerMeta) {
-		return this;
-		
+		model.addTrigger(triggerMeta);
+		return this;		
 	}
 
 

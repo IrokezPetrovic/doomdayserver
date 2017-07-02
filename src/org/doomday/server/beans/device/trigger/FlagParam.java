@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class FlagParam extends TriggerParam {
 	private Set<String> flags;
@@ -23,6 +24,18 @@ public class FlagParam extends TriggerParam {
 	@Override
 	public String getType() {
 		return "flag";
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("FLAG ");
+		sb.append(getName())
+		.append(" (");
+		Stream.of(flags)
+		.forEach(sb::append);
+		sb.append(")");
+		return sb.toString();
+		
 	}
 
 }
