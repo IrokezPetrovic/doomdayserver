@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -27,9 +26,6 @@ import org.doomday.server.beans.device.trigger.StrParam;
 import org.doomday.server.beans.device.trigger.TriggerMeta;
 import org.doomday.server.beans.device.trigger.TriggerParam;
 import org.doomday.server.beans.device.trigger.ValParam;
-import org.doomday.server.eventbus.DeviceSensorEvent;
-import org.doomday.server.eventbus.IDeviceEventBus;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 
@@ -44,8 +40,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	private ProtocolState state = ProtocolState.DISAUTHED;
 	private final Queue<String> msgQueue = new ArrayDeque<>();
 	
-	@Autowired
-	private IDeviceEventBus eventBus;
+	
 	
 	public ProtocolProcessor(Device device) {
 		this.device = device;
@@ -55,7 +50,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	@PostConstruct
 	public void init(){
 		msgQueue.add("CONNECT "+device.getPincode());
-		
+		/*
 		eventBus.onTrigger(device.getDevSerial(), (e)->{
 			DeviceMeta meta = device.getMeta();
 			if (meta==null) return;
@@ -69,6 +64,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 				
 			}
 		});
+		*/
 		
 		
 		System.out.println("PP PostConstruct");
@@ -131,7 +127,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		SensorMeta s = device.getMeta().getSensor(sensorName);
 		if (s.validate(sensorValue)){
 			device.setData(sensorName,sensorValue);
-			eventBus.emit(device.getDevSerial(), new DeviceSensorEvent(sensorName,sensorValue));
+			//eventBus.emit(device.getDevSerial(), new DeviceSensorEvent(sensorName,sensorValue));
 		}
 	}
 

@@ -1,6 +1,7 @@
 package org.doomday.server.web.admin.ctrl;
 
 import java.util.Collection;
+
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.model.IDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,5 +20,10 @@ public class DeviceCtrl {
 	@RequestMapping(method=RequestMethod.GET,path="/list")
 	Collection<Device> listDevices(){
 		return deviceRepository.listDevices();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST,path="/save")
+	void saveDevice(Device device){
+		
 	}
 }

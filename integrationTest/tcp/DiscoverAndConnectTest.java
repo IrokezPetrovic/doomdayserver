@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.eventbus.EventBus;
-import org.doomday.server.eventbus.IDeviceEventBus;
 import org.doomday.server.model.IDeviceRepository;
 import org.doomday.server.protocol.IProtocolProcessor;
 import org.doomday.server.protocol.IProtocolProcessorFactory;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.test.context.ContextConfiguration;
@@ -105,6 +103,12 @@ public class DiscoverAndConnectTest {
 			
 		}
 		
+		
+		@Bean
+		EventBus eventBus(){
+			return new EventBus();
+		}
+		
 		@Bean
 		IDeviceRepository deviceRepository(){
 			return new IDeviceRepository() {				
@@ -130,10 +134,7 @@ public class DiscoverAndConnectTest {
 		}
 		
 		
-		@Bean
-		IDeviceEventBus eventBus(){
-			return new EventBus();
-		}
+		
 	}
 	
 	

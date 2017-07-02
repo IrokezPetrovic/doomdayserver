@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.Selector;
+import java.nio.channels.spi.SelectorProvider;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -16,7 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TcpDiscoverService implements IDiscoverService{
+public class TcpDiscoverService implements IDiscoverService,Runnable{
 
 	@Autowired
 	@Qualifier("discover.mcastgroup")
@@ -34,39 +38,39 @@ public class TcpDiscoverService implements IDiscoverService{
 	
 	private MulticastSocket mcastSock;
 			
+	Thread t;
+	
 	@PostConstruct
-	public void init() throws IOException{
-		InetAddress mcastAddr = InetAddress.getByName(mcastGroup);				
-		mcastSock = new MulticastSocket(mcastPort);
-		
+	public void init() throws IOException{				
+		InetAddress mcastAddr = InetAddress.getByName(mcastGroup);		
+		mcastSock = new MulticastSocket(mcastPort);		
 		mcastSock.joinGroup(mcastAddr);					
-		System.out.println("Discovery started");
-		ready = true;
-	}
-	private volatile boolean ready = false;
-	
-	@PreDestroy
-	
-	public void destroy(){
-		
-		System.out.println("TCP DISCOVER DESTROY");
-		ready = false;
-		mcastSock.close();
-						
+		System.out.println("Discovery started, listen "+mcastGroup+":"+mcastPort);
+		t = new Thread(this);
+		t.start();
 	}
 	
-	@Override
 	
-	public void discover() {
+	@PreDestroy	
+	public void destroy(){		
+		System.out.println("TCP DISCOVER DESTROY");		
+		mcastSock.close();	
+		t.interrupt();
+	}
+	
+	public void discover(){
 		
+	}
+	
+	public void $discover() {
+		System.out.println("DISCOVER...");
 		byte[] buff = new byte[1024];
-		DatagramPacket dp = new DatagramPacket(buff, buff.length);
-		if (!ready) return;
+		DatagramPacket dp = new DatagramPacket(buff, buff.length);		
 		try {
 			mcastSock.receive(dp);
 			parsePacket(dp);
 		} catch (IOException e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 				
 	}
@@ -91,6 +95,15 @@ public class TcpDiscoverService implements IDiscoverService{
 		if (device.getPincode()!=null){
 			tcpWorker.appendDevice(ipAddr,device);
 		}
+	}
+
+
+	@Override
+	public void run() {
+		while(!Thread.currentThread().isInterrupted()){
+			$discover();
+		}
+		
 	}
 	
 

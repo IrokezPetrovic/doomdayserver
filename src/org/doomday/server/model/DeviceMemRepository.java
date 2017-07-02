@@ -15,6 +15,7 @@ public class DeviceMemRepository implements IDeviceRepository{
 	public Collection<Device> listDevices(){
 		return devices.values();
 	}
+	
 	@Override
 	public void updateDevice(Device d){
 		String _id = d.getDevClass()+":"+d.getDevSerial();
@@ -24,9 +25,9 @@ public class DeviceMemRepository implements IDeviceRepository{
 		}
 		
 	}
+	
 	@Override
-	public Device getDevice(String devClass, String devSerial) {
-		
+	public Device getDevice(String devClass, String devSerial) {		
 		Device d = devices.get(devClass+":"+devSerial);
 		if (d==null){
 			d = new Device(devClass, devSerial);

@@ -1,33 +1,46 @@
 package org.doomday.server.eventbus;
 
-public class EventBus implements IDeviceEventBus{
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-	EventListenerList<ITriggerEventListener> triggerEventListeners = new EventListenerList<>();
-	EventListenerList<ISensorEventListener> sensorEventListeners = new EventListenerList<>();
-	EventListenerList<IEventEventListener> eventEventListeners = new EventListenerList<>();
+import org.springframework.stereotype.Component;
+
+
+
+@Component
+public class EventBus {
+	SubscriberList subs = new SubscriberList();
+	ExecutorService executor = Executors.newFixedThreadPool(4);
 	
-	
-	@Override
-	public void emit(String devSerial, DeviceEvent event) {
-		// TODO Auto-generated method stub		
-	}
-	
-	@Override
-	public void onTrigger(String devSerial, ITriggerEventListener listener) {
-		triggerEventListeners.add(devSerial, listener);
-	}
-	
-	@Override
-	public void onSensor(String devSerial, ISensorEventListener listener) {
-		sensorEventListeners.add(devSerial, listener);
+	public Subscription subscribe(Object subscriber){		
+		List<Class<?>> targetClasses = Stream.of(subscriber.getClass().getMethods())		
+		.filter(m->m.isAnnotationPresent(Reciever.class))		
+		.map(m->{			
+			Class<?> t = m.getParameters()[0].getType();
+			Reciever annotation = m.getAnnotation(Reciever.class);						
+			subs.put(new Subscriber(t, m, subscriber,annotation.value()));
+			return t;
+		}).collect(Collectors.toList());
+		return new Subscription(this, subscriber, targetClasses);
 		
 	}
-	
-	@Override
-	public void onEvent(String devSerial, IEventEventListener listener) {
-		eventEventListeners.add(devSerial, listener);
 		
-	}
-
 	
+	public void emit(Object event){
+		this.emit("",event,false);
+	}
+	public void emit(String route,Object event){
+		this.emit(route, event, false);
+	}
+	public void emit(String route,Object event,boolean propogation){
+		Class<?> eClass = event.getClass();
+		do{
+			executor.submit(new SubscriberCaller(event, subs.get(eClass)));
+			eClass = eClass.getSuperclass();
+			
+		}while(eClass!=Object.class&&propogation);
+	}
 }

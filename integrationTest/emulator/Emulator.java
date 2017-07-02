@@ -54,7 +54,7 @@ public class Emulator implements Runnable{
 			return;
 		if (!key.isValid()||!key.isWritable())
 			return;
-		System.out.println("SIM: Send discovery packet");
+		System.out.println("SIM: Send discovery packet to "+discoveryAddr);
 		discoverySendEnabled = false;
 		
 		byte[] discoveryStringBytes = (devClass+" "+devSerial).getBytes();

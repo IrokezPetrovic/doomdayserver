@@ -12,10 +12,9 @@ import org.springframework.stereotype.Component;
 public class DiscoveryWorker implements Runnable{
 	@Autowired(required=false)
 	List<IDiscoverService> discoverers;
-
 	
-	private Thread t;
 	
+	private Thread t;	
 	@PostConstruct
 	public void init(){
 		System.out.println("WORKER CONSTRUCT");
@@ -31,11 +30,12 @@ public class DiscoveryWorker implements Runnable{
 	
 	@Override
 	public void run() {
-		while(!Thread.interrupted()){			
+		while(!Thread.interrupted()){				
 			if (discoverers!=null)
 				discoverers.forEach((d)->d.discover());
-			
+			//System.out.println("Discover....");
 		}
+		System.out.println("Discover finish");
 		
 	}
 	
