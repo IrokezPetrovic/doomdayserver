@@ -1,4 +1,4 @@
-package org.doomday.server.model.event;
+package org.doomday.server.protocol.event;
 
 public class DeviceSensorEvent {
 	private final String devSerial;

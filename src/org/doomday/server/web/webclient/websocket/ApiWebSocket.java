@@ -1,25 +1,28 @@
-package org.doomday.server.web.webclient;
+package org.doomday.server.web.webclient.websocket;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-public class WebSocket extends TextWebSocketHandler{
-	Map<WebSocketSession, WSSession> sessions = new HashMap<>();
+@Component
+public class ApiWebSocket extends TextWebSocketHandler{
+	Map<WebSocketSession, Session> sessions = new HashMap<>();
 	
+		
 	@Autowired
-	Function<WebSocketSession, WSSession> wsSupplier;
+	Function<Session, WebSocketSession> sessionProducer;
 	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {		
-		super.afterConnectionEstablished(session);
-		sessions.put(session, wsSupplier.apply(session));		
+		super.afterConnectionEstablished(session);	
+		
 	}
 	
 	@Override

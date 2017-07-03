@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 
 
-@Component
+
 public class EventBus implements IEventBus {
 	SubscriberList subs = new SubscriberList();
 	ExecutorService executor = Executors.newFixedThreadPool(4);

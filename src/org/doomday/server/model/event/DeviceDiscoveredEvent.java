@@ -1,24 +1,20 @@
 package org.doomday.server.model.event;
 
+import org.doomday.server.beans.device.Device;
+
 public class DeviceDiscoveredEvent {
-	private final String devAddr;
-	private final String devClass;
-	private final String devSerial;
-	public DeviceDiscoveredEvent(String devAddr, String devClass, String devSerial) {
+	private final Device device;
+	
+	public DeviceDiscoveredEvent(Device device) {
 		super();
-		this.devAddr = devAddr;
-		this.devClass = devClass;
-		this.devSerial = devSerial;
+		this.device = device;
 	}
-	public String getDevAddr() {
-		return devAddr;
+
+
+	public Device getDevice() {
+		return device;
 	}
-	public String getDevClass() {
-		return devClass;
-	}
-	public String getDevSerial() {
-		return devSerial;
-	}
+	
 	
 	
 	

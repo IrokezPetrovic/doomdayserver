@@ -16,8 +16,6 @@ import org.doomday.server.model.IDeviceRepository;
 import org.doomday.server.protocol.IProtocolProcessor;
 import org.doomday.server.protocol.IProtocolProcessorFactory;
 import org.doomday.server.protocol.ProtocolProcessor;
-import org.doomday.server.service.DiscoveryWorker;
-import org.doomday.server.service.IDiscoverService;
 import org.doomday.server.service.tcp.ITcpWorker;
 import org.doomday.server.service.tcp.TcpDiscoverService;
 import org.doomday.server.service.tcp.TcpWorker;
@@ -41,8 +39,7 @@ import emulator.Emulator;
 public class DiscoverAndConnectTest {	
 	public Emulator emulator;
 	
-	@Autowired
-	DiscoveryWorker discoveryWorker;
+	
 	
 	@Autowired
 	@Qualifier("discover.mcastgroup")
@@ -55,6 +52,10 @@ public class DiscoverAndConnectTest {
 	@Autowired
 	@Qualifier("tcp.port")
 	Integer tcpPort;
+	
+	
+	@Autowired
+	IDeviceRepository deviceRepository;
 	
 	@Before
 	public void before(){
@@ -72,22 +73,16 @@ public class DiscoverAndConnectTest {
 	public void testDiscover() throws InterruptedException{
 		//TimeUnit.SECONDS.sleep(1);
 		emulator.begin();
-		TimeUnit.SECONDS.sleep(2);
-		
-		
+		TimeUnit.SECONDS.sleep(10);				
 	}
 		
 	
 	
 	@Import(tcp.Config.class)
 	public static class Config{
+
 		@Bean
-		DiscoveryWorker discoveryWorker(){
-			return new DiscoveryWorker();
-		}
-		
-		@Bean
-		IDiscoverService tcpDiscoverService(){
+		TcpDiscoverService tcpDiscoverService(){
 			return new TcpDiscoverService();
 		}
 		
@@ -125,10 +120,11 @@ public class DiscoverAndConnectTest {
 		
 		@Bean
 		IDeviceRepository deviceRepository(){
-			return new IDeviceRepository() {				
+			return new IDeviceRepository() {
+				private Device d;
 				@Override
 				public Device getDevice(String devClass, String devSerial) {
-					Device d = new Device(devClass,devSerial);
+					d = new Device(devClass,devSerial);
 					d.setPincode("1234");
 					return d;
 				}

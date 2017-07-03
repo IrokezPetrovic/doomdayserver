@@ -27,6 +27,7 @@ public class JsonTest {
 		//m.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		Device d = new Device("DOOMDAYDIY:TEAPOT:0.0.1", "12345");
 		DeviceMeta meta = new DeviceMeta();
+		
 		meta.addSensor(new IntSensorMeta("INTSENSOR", 10, 20));
 		meta.addSensor(new FloatSensorMeta("FLOATSENSOR", 3.14f, 5.15f));
 		meta.addSensor(new StrSensorMeta("STRSENSOR"));
@@ -45,6 +46,7 @@ public class JsonTest {
 				});
 		meta.addTrigger(t);
 		System.out.println(m.writeValueAsString(t));
-		System.out.println(m.writeValueAsString(d));		
+		System.out.println(m.writeValueAsString(d));
+		System.out.println(m.writeValueAsString(meta));
 	}
 }

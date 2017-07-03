@@ -79,6 +79,10 @@ public class Device implements Mergeable<Device>{
 	}
 
 	
+	public String getId(){
+		return this.devClass+":"+this.devSerial;
+	}
+	
 	
 
 

@@ -8,7 +8,6 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.DeviceMeta;
@@ -27,8 +26,10 @@ import org.doomday.server.beans.device.trigger.StrParam;
 import org.doomday.server.beans.device.trigger.TriggerMeta;
 import org.doomday.server.beans.device.trigger.TriggerParam;
 import org.doomday.server.beans.device.trigger.ValParam;
-import org.doomday.server.eventbus.IEventBus;
-import org.doomday.server.eventbus.Reciever;
+import org.doomday.server.eventbus.rx.IEventBus;
+import org.doomday.server.protocol.event.DeviceMetaStoreEvent;
+import org.doomday.server.protocol.event.DeviceSensorEvent;
+import org.doomday.server.protocol.event.DeviceTriggerEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -41,6 +42,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	
 	
 	private final Device device;
+	private DeviceMeta deviceMeta;
 	private ProtocolState state = ProtocolState.DISAUTHED;
 	private final Queue<String> msgQueue = new ArrayDeque<>();
 	
@@ -50,6 +52,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	
 	public ProtocolProcessor(Device device) {
 		this.device = device;
+		this.deviceMeta = device.getMeta();
 		
 	}
 	
@@ -57,29 +60,24 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	
 	
 	@PostConstruct
-	public void init(){		
-		/*
-		eventBus.onTrigger(device.getDevSerial(), (e)->{
-			DeviceMeta meta = device.getMeta();
-			if (meta==null) return;
-			
-			TriggerMeta tm = meta.getTrigger(e.getTrigger());
-			if (tm==null) return;
-			
-			if (tm.validate(e.getParams())){				
-				msgQueue.add(e.getTrigger()+" "+Stream.of(e.getParams()).reduce((s,v)->s+" "+v));
-			} else {
-				
-			}
-		});
-		*/
+	public void init(){				
 		if (device.getPincode()!=null){
 			msgQueue.add("CONNECT "+device.getPincode());
 		}
+		eventBus.get("/device")
+		.ofType(DeviceTriggerEvent.class)
+		.filter(e->e.getDeviceId().equals(device.getId()))
+		.subscribe(e->{
+			String argString = e.getArgs().replaceAll("( {2,})", " ");
+			TriggerMeta trigger = deviceMeta.getTrigger(e.getTriggerId());
+			if (trigger==null) return;
+			if (trigger.validate(argString.split(" "))){
+				msgQueue.add(e.getTriggerId()+" "+argString);
+			}
+		});
 	}
 	
-	
-			
+				
 	public void read(String content){
 		StringTokenizer st = new StringTokenizer(content, " ");
 		String cmd = st.nextToken();
@@ -90,12 +88,10 @@ public class ProtocolProcessor implements IProtocolProcessor{
 			
 			case "SENSOR": parseSensor(st);break;
 			case "TRIGGER": parseTrigger(st);break;
-			//case "EVENT": parseEvent(st);break;
-			//case "LANG": parseLang(st);break;		
-			case "READY": parseReady(st);break;
 			
+			case "READY": parseReady(st);break;			
 			case "SET": parseSet(st);break;
-			//case "EMIT": parseEmit(st);break;
+			
 		}
 		
 	} 
@@ -122,6 +118,11 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	private void parseReady(StringTokenizer st) {
 		if (state!=ProtocolState.AUTHED) throw new IllegalStateException("Illegal state to parse READY");
 		this.state = ProtocolState.READY;		
+		
+		if (device.getMeta()==null){			
+			eventBus.pub("/device", new DeviceMetaStoreEvent(deviceMeta,device.getDevSerial()));
+			device.setMeta(deviceMeta);
+		}
 	}
 	
 	/**
@@ -134,8 +135,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		String sensorValue = st.nextToken();
 		SensorMeta s = device.getMeta().getSensor(sensorName);
 		if (s.validate(sensorValue)){
-			device.setData(sensorName,sensorValue);
-			//eventBus.emit(device.getDevSerial(), new DeviceSensorEvent(sensorName,sensorValue));
+			eventBus.pub("/device", new DeviceSensorEvent(device.getId(), sensorName, sensorValue));
 		}
 	}
 
@@ -152,22 +152,22 @@ public class ProtocolProcessor implements IProtocolProcessor{
 			String paramType = st.nextToken();
 			String paramName = st.nextToken();
 			switch (paramType){
-			case "INT":params.add(parseIntParam(paramName,st));break;
-			case "FLOAT":params.add(parseFloatParam(paramName,st));break;
-			case "BOOL":params.add(parseBoolParam(paramName,st));break;
-			case "STR":params.add(parseStrParam(paramName,st));break;
-			case "VAL":params.add(parseValParam(paramName,st));break;
-			case "FLAG":params.add(parseFlagParam(paramName,st));break;
+				case "INT":params.add(parseIntParam(paramName,st));break;
+				case "FLOAT":params.add(parseFloatParam(paramName,st));break;
+				case "BOOL":params.add(parseBoolParam(paramName,st));break;
+				case "STR":params.add(parseStrParam(paramName,st));break;
+				case "VAL":params.add(parseValParam(paramName,st));break;
+				case "FLAG":params.add(parseFlagParam(paramName,st));break;
 			}			
 		}
 		
 		TriggerMeta tm = new TriggerMeta(name,params.toArray(new TriggerParam[0]));		
-		DeviceMeta meta = device.getMeta();
-		if (meta==null){
-			meta = new DeviceMeta();
-			device.setMeta(meta);					
+		
+		if (deviceMeta==null){
+			deviceMeta = new DeviceMeta();
+			device.setMeta(deviceMeta);					
 		}
-		meta.addTrigger(tm);
+		deviceMeta.addTrigger(tm);
 		}
 
 	private TriggerParam parseFlagParam(String name, StringTokenizer st) {
@@ -227,13 +227,13 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		} catch (NoSuchElementException e){
 			
 		}
-		if (s!=null){
-			DeviceMeta meta = device.getMeta();
-			if (meta==null){
-				meta = new DeviceMeta();
-				device.setMeta(meta);
+		
+		if (s!=null){			
+			if (deviceMeta==null){
+				deviceMeta = new DeviceMeta();
+				device.setMeta(deviceMeta);
 			}
-			meta.addSensor(s);
+			deviceMeta.addSensor(s);
 		}
 		
 	}

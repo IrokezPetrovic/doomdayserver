@@ -140,6 +140,7 @@ public class Emulator implements Runnable{
 		//System.out.println("EMULATOR: WRite");
 		String line = model.getQueue().poll();
 		if (line!=null){
+			
 			System.out.println("EMULATOR =>:"+line);
 			byte[] bytes = (line+"\n").getBytes();
 			SocketChannel chan = (SocketChannel) key.channel();
@@ -148,6 +149,11 @@ public class Emulator implements Runnable{
 			buffer.put(bytes);
 			buffer.flip();
 			chan.write(buffer);
+			
+			if (line.equals("DENY")){
+				closeChan(key);
+			}
+			
 		}
 		
 	}
@@ -157,7 +163,9 @@ public class Emulator implements Runnable{
 		SocketChannel chan = (SocketChannel) key.channel();
 		model.setStatus(Status.DISCONNECTED);
 		try {
+			
 			chan.close();
+			chan.finishConnect();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

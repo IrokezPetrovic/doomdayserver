@@ -3,6 +3,7 @@ package org.doomday.server.service.tcp;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -14,13 +15,16 @@ import java.util.Queue;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.protocol.IProtocolProcessor;
 import org.doomday.server.protocol.IProtocolProcessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TcpWorker implements ITcpWorker,Runnable{
 	private Map<SelectionKey, IProtocolProcessor> processors = new HashMap<>();
 	
@@ -31,15 +35,25 @@ public class TcpWorker implements ITcpWorker,Runnable{
 	@Qualifier("tcp.port")
 	Integer tcpPort;
 	
+	Thread t;
 	@PostConstruct
 	public void init() throws IOException{
 		
-		selector = SelectorProvider.provider().openSelector();
-		
-		Thread t = new Thread(this);
+		selector = SelectorProvider.provider().openSelector();	
+		t = new Thread(this);
 		t.start();
 	}
 	
+	@PreDestroy
+	public void destroy(){
+		t.interrupt();
+		try {
+			selector.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	Selector selector = null;
 	
 	@Override
@@ -47,7 +61,7 @@ public class TcpWorker implements ITcpWorker,Runnable{
 		try {
 			//System.out.println("RUN");
 			//selector = SelectorProvider.provider().openSelector();
-			while(selector.select(1)>-1){
+			while(selector.select(10)>-1){
 //				System.out.println("SELECT");
 				Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
 				while(iterator.hasNext()){
@@ -64,14 +78,12 @@ public class TcpWorker implements ITcpWorker,Runnable{
 								writeChan(key);
 							}
 						}
-					} catch (IOException e){
-		
+					} catch (Exception e){		
 						closeChan(key);
 					}
 				}
 			}
-		} catch (IOException e) {
-
+		} catch (IOException|ClosedSelectorException e) {
 			e.printStackTrace();
 		}
 		
