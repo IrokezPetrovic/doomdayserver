@@ -1,0 +1,28 @@
+package org.doomday.emulator.model.script;
+import org.doomday.emulator.model.BoolSensor;
+import org.doomday.emulator.model.DeviceModel;
+
+import jdk.nashorn.api.scripting.AbstractJSObject;
+@SuppressWarnings("restriction")
+public class BoolSensorFactory extends AbstractJSObject{
+	
+	public BoolSensorFactory(DeviceModel model) {
+		
+	}
+
+	@Override
+	public boolean isFunction() {
+		return true;
+	}
+	
+	@Override
+	public Object call(Object thiz, Object... args) {
+		if (args.length==1){
+			String name = (String) args[0];			
+			return new BoolSensor(name);
+		}
+		return null;
+				
+	}
+	
+}

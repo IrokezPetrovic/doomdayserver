@@ -1,9 +1,13 @@
 package org.doomday.emulator.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DeviceModel {
 
 	private String devClass;
 	private String devSerial;
+	private Map<String, Sensor> sensors = new HashMap<String, Sensor>();
 
 	
 
@@ -34,7 +38,11 @@ public class DeviceModel {
 	}
 
 	public void setDevSerial(String serial) {
-		this.devSerial = serial;
+		this.devSerial = serial;		
+	}
+
+	public void addSensor(Sensor sensor) {
+		this.sensors.put(sensor.getName(),sensor);
 		
 	}
 

@@ -1,6 +1,7 @@
 package org.doomday.emulator.model.script;
 
 import org.doomday.emulator.model.DeviceModel;
+import org.doomday.emulator.model.Sensor;
 
 public class DeviceWrapper {
 
@@ -23,6 +24,11 @@ public class DeviceWrapper {
 	}
 	public void setDevSerial(String serial){
 		model.setDevSerial(serial);
+	}
+	
+	public Sensor sensor(Sensor sensor){
+		model.addSensor(sensor);
+		return sensor;
 	}
 
 }

@@ -20,7 +20,7 @@ public class ScriptTest {
 	};
 	@Test
 	public void testDeviceSetClass() throws ScriptException{
-		String src = "logger.log(IntSensor);"
+		String src = ""
 				+ "device.devClass='CLASS'";
 		DeviceModel model = factory.build(src, logger);
 		assertEquals("CLASS", model.getDevClass());		
@@ -34,11 +34,26 @@ public class ScriptTest {
 	}
 	
 	@Test
-	public void testAddSensor() throws ScriptException{
-		String src = "var sensor = device.sensor(new IntSensor('INT',0,10));";
-		DeviceModel m = factory.build(src, logger);
-		
-			
+	public void testAddIntSensor() throws ScriptException{
+		String src = "var sensor = device.sensor(IntSensor('INT',0,10));sensor.set(1);";
+		factory.build(src, logger);					
+	}
+	
+	@Test
+	public void testAddFloatSensor() throws ScriptException{
+		String src = "var sensor = device.sensor(FloatSensor('FLOAT',0.0,10.0));sensor.set(1);";
+		factory.build(src, logger);
+	}
+	
+	@Test
+	public void testAddStrSensor() throws ScriptException{
+		String src = "var sensor = device.sensor(StrSensor('STR'));sensor.set('TEST');";
+		factory.build(src, logger);
+	}
+	@Test
+	public void testAddBoolSensor() throws ScriptException{
+		String src = "var sensor = device.sensor(BoolSensor('BOOL'));sensor.set(true);";
+		factory.build(src, logger);
 	}
 	
 }
