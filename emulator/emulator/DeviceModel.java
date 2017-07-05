@@ -90,7 +90,18 @@ public class DeviceModel {
 	public Status getStatus() {
 		return status;
 	}
+	
 	public void setStatus(Status status) {	
 		this.status = status;
+	}
+	
+	public String getDevClass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public String getDevSerial() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

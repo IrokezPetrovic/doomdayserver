@@ -146,6 +146,12 @@ public class DiscoverAndConnectTest {
 					// TODO Auto-generated method stub
 					return null;
 				}
+
+				@Override
+				public void forget(Device d) {
+					// TODO Auto-generated method stub
+					
+				}
 			};
 		}
 		
