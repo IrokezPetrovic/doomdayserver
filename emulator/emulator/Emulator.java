@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 import java.net.ProtocolFamily;
 import java.net.StandardProtocolFamily;
 import java.nio.ByteBuffer;
+import java.nio.channels.CancelledKeyException;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -112,9 +114,11 @@ public class Emulator implements Runnable{
 				clientKey = null;
 				SocketChannel chan = (SocketChannel) key.channel();
 				chan.close();
-			} catch (IOException e1){
+			} catch (Exception e1){
 				
 			}
+		} catch (CancelledKeyException e){
+			clientKey = null;			
 		}
 	}
 	
@@ -162,8 +166,7 @@ public class Emulator implements Runnable{
 		clientKey = null;
 		SocketChannel chan = (SocketChannel) key.channel();
 		model.setStatus(Status.DISCONNECTED);
-		try {
-			
+		try {			
 			chan.close();
 			chan.finishConnect();
 		} catch (IOException e) {

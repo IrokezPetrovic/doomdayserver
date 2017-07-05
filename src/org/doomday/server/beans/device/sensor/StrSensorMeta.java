@@ -16,4 +16,9 @@ public class StrSensorMeta extends SensorMeta{
 		return "str";
 	}
 
+	@Override
+	public String getDef() {
+		return "STR";
+	}
+
 }

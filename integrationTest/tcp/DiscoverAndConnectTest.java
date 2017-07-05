@@ -13,12 +13,12 @@ import org.doomday.server.beans.device.trigger.TriggerParam;
 import org.doomday.server.eventbus.EventBus;
 import org.doomday.server.eventbus.IEventBus;
 import org.doomday.server.model.IDeviceRepository;
+import org.doomday.server.plugin.tcpdevice.ITcpWorker;
+import org.doomday.server.plugin.tcpdevice.TcpDiscoverService;
+import org.doomday.server.plugin.tcpdevice.TcpWorker;
 import org.doomday.server.protocol.IProtocolProcessor;
 import org.doomday.server.protocol.IProtocolProcessorFactory;
 import org.doomday.server.protocol.ProtocolProcessor;
-import org.doomday.server.service.tcp.ITcpWorker;
-import org.doomday.server.service.tcp.TcpDiscoverService;
-import org.doomday.server.service.tcp.TcpWorker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -139,6 +139,12 @@ public class DiscoverAndConnectTest {
 				public void updateDevice(Device d) {
 					// TODO Auto-generated method stub
 					
+				}
+
+				@Override
+				public Device getDevice(String deviceId) {
+					// TODO Auto-generated method stub
+					return null;
 				}
 			};
 		}

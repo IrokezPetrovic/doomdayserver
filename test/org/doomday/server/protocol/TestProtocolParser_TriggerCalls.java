@@ -3,7 +3,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import org.doomday.server.beans.device.Device;
-import org.doomday.server.beans.device.DeviceMeta;
+import org.doomday.server.beans.device.DeviceProfile;
 import org.doomday.server.beans.device.trigger.BoolParam;
 import org.doomday.server.beans.device.trigger.FlagParam;
 import org.doomday.server.beans.device.trigger.FloatParam;
@@ -18,8 +18,8 @@ public class TestProtocolParser_TriggerCalls {
 	
 	@Before
 	public void before(){
-		DeviceMeta meta = new DeviceMeta();
-		device.setMeta(meta);				
+		DeviceProfile meta = new DeviceProfile();
+		device.setProfile(meta);				
 	}
 	
 	@Test

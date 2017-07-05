@@ -27,4 +27,9 @@ public class ValSensorMeta extends SensorMeta{
 		return "val";
 	}
 
+	@Override
+	public String getDef() {
+		return "VAL ("+String.join(",", values)+")";
+	}
+
 }

@@ -34,6 +34,11 @@ public class IntSensorMeta extends SensorMeta{
 	public String getType() {
 		return "int";
 	}
+
+	@Override
+	public String getDef() {
+		return String.format("INT (%d,%d)", min,max);
+	}
 		
 	
 	

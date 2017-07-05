@@ -25,5 +25,9 @@ public class FlagSensorMeta extends SensorMeta{
 	public String getType() {
 		return "flag";
 	}
+	@Override
+	public String getDef() {
+		return "FLAG ("+String.join(",", flags)+")";
+	}
 
 }

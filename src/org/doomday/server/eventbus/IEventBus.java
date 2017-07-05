@@ -1,13 +1,11 @@
 package org.doomday.server.eventbus;
 
+import io.reactivex.Observable;
+
 public interface IEventBus {
 
-	Subscription subscribe(Object subscriber);
+	void pub(String key, Object val);
 
-	void emit(Object event);
-
-	void emit(String route, Object event);
-
-	void emit(String route, Object event, boolean propogation);
+	Observable<Object> get(String key);
 
 }

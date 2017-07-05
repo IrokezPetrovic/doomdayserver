@@ -65,7 +65,7 @@ public class DeviceModel {
 			String cmd = st.nextToken();
 			switch(cmd){
 			case "CONNECT":processConnect(st);break;
-			case "INFO": processInfo(st);break;
+			case "PROFILE": processInfo(st);break;
 			case "READY": processReady(st);break;
 			default: processTrigger(cmd,st);break;
 			}

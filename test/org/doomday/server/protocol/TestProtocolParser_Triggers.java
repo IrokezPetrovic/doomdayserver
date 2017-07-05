@@ -3,7 +3,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import org.doomday.server.beans.device.Device;
-import org.doomday.server.beans.device.DeviceMeta;
+import org.doomday.server.beans.device.DeviceProfile;
 import org.doomday.server.beans.device.trigger.BoolParam;
 import org.doomday.server.beans.device.trigger.FlagParam;
 import org.doomday.server.beans.device.trigger.FloatParam;
@@ -18,8 +18,8 @@ public class TestProtocolParser_Triggers {
 	Device device = new Device("","");
 	ProtocolProcessor pp = new ProtocolProcessor(device);
 	
-	private DeviceMeta checkMeta(Device d){
-		DeviceMeta meta = d.getMeta();
+	private DeviceProfile checkMeta(Device d){
+		DeviceProfile meta = d.getProfile();
 		assertNotNull(meta);
 		return meta;
 	}
@@ -27,7 +27,7 @@ public class TestProtocolParser_Triggers {
 	public void test_noArgs(){	
 		pp.read("ACCEPT");
 		pp.read("TRIGGER TRIG1");
-		DeviceMeta meta = checkMeta(device);
+		DeviceProfile meta = checkMeta(device);
 		TriggerMeta tm = meta.getTrigger("TRIG1");
 		assertNotNull(tm);
 		TriggerParam[] params = tm.getParams();
@@ -38,7 +38,7 @@ public class TestProtocolParser_Triggers {
 	public void test_IntArg(){
 		pp.read("ACCEPT");
 		pp.read("TRIGGER TRIG1 INT PARAM1 (10,20)");
-		DeviceMeta meta = checkMeta(device);
+		DeviceProfile meta = checkMeta(device);
 		TriggerMeta tm = meta.getTrigger("TRIG1");
 		assertNotNull(tm);
 		TriggerParam[] params = tm.getParams();
@@ -54,7 +54,7 @@ public class TestProtocolParser_Triggers {
 	public void test_FloatArg(){
 		pp.read("ACCEPT");
 		pp.read("TRIGGER TRIG1 FLOAT PARAM1 (3.14,5.16)");
-		DeviceMeta meta = checkMeta(device);
+		DeviceProfile meta = checkMeta(device);
 		TriggerMeta tm = meta.getTrigger("TRIG1");
 		assertNotNull(tm);
 		TriggerParam[] params = tm.getParams();
@@ -70,7 +70,7 @@ public class TestProtocolParser_Triggers {
 	public void test_StrArg(){
 		pp.read("ACCEPT");
 		pp.read("TRIGGER TRIG1 STR PARAM1");
-		DeviceMeta meta = checkMeta(device);
+		DeviceProfile meta = checkMeta(device);
 		TriggerMeta tm = meta.getTrigger("TRIG1");
 		assertNotNull(tm);
 		TriggerParam[] params = tm.getParams();
@@ -83,7 +83,7 @@ public class TestProtocolParser_Triggers {
 	public void test_BoolArg(){
 		pp.read("ACCEPT");
 		pp.read("TRIGGER TRIG1 BOOL PARAM1");
-		DeviceMeta meta = checkMeta(device);
+		DeviceProfile meta = checkMeta(device);
 		TriggerMeta tm = meta.getTrigger("TRIG1");
 		assertNotNull(tm);
 		TriggerParam[] params = tm.getParams();
@@ -97,7 +97,7 @@ public class TestProtocolParser_Triggers {
 	public void test_ValArg(){
 		pp.read("ACCEPT");
 		pp.read("TRIGGER TRIG1 VAL PARAM1 (OPTION1)");
-		DeviceMeta meta = checkMeta(device);
+		DeviceProfile meta = checkMeta(device);
 		TriggerMeta tm = meta.getTrigger("TRIG1");
 		assertNotNull(tm);
 		TriggerParam[] params = tm.getParams();
@@ -114,7 +114,7 @@ public class TestProtocolParser_Triggers {
 	public void test_FlagArg(){
 		pp.read("ACCEPT");
 		pp.read("TRIGGER TRIG1 FLAG PARAM1 (OPTION1)");
-		DeviceMeta meta = checkMeta(device);
+		DeviceProfile meta = checkMeta(device);
 		TriggerMeta tm = meta.getTrigger("TRIG1");
 		assertNotNull(tm);
 		TriggerParam[] params = tm.getParams();
@@ -131,7 +131,7 @@ public class TestProtocolParser_Triggers {
 	public void test_AllAvailTypes(){
 		pp.read("ACCEPT");
 		pp.read("TRIGGER TRIG1 INT INTP (10,20) FLOAT FLOATP (3.14,5.16) STR STRP BOOL BOOLP VAL VALP (OPTION1,OPTION2,OPTION3) FLAG FLAGP (FLAG1,FLAG2,FLAG3)");
-		DeviceMeta meta = checkMeta(device);
+		DeviceProfile meta = checkMeta(device);
 		TriggerMeta tm = meta.getTrigger("TRIG1");
 		assertNotNull(tm);
 		TriggerParam[] params = tm.getParams();

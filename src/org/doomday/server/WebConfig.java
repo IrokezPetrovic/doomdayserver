@@ -1,7 +1,6 @@
 package org.doomday.server;
 
-import org.doomday.server.web.admin.websocket.AdminWebSocket;
-import org.doomday.server.web.webclient.websocket.ApiWebSocket;
+import org.doomday.server.plugin.webclient.websocket.WebClientWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -44,7 +43,7 @@ public class WebConfig implements WebSocketConfigurer{
 
 	@Bean
 	@Scope("prototype")
-	public ObjectMapper jsonMapper(){
+	public ObjectMapper jsonMapper(){		
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
@@ -55,7 +54,7 @@ public class WebConfig implements WebSocketConfigurer{
 	
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(ctx.getBean(AdminWebSocket.class), "/admin/websocket.ws");
-		registry.addHandler(ctx.getBean(ApiWebSocket.class), "/webclient/event.ws");
+		
+		registry.addHandler(ctx.getBean(WebClientWebSocket.class), "/webclient/event.ws");
 	}
 }

@@ -10,7 +10,7 @@ import java.util.StringTokenizer;
 import javax.annotation.PostConstruct;
 
 import org.doomday.server.beans.device.Device;
-import org.doomday.server.beans.device.DeviceMeta;
+import org.doomday.server.beans.device.DeviceProfile;
 import org.doomday.server.beans.device.sensor.BoolSensorMeta;
 import org.doomday.server.beans.device.sensor.FlagSensorMeta;
 import org.doomday.server.beans.device.sensor.FloatSensorMeta;
@@ -26,10 +26,11 @@ import org.doomday.server.beans.device.trigger.StrParam;
 import org.doomday.server.beans.device.trigger.TriggerMeta;
 import org.doomday.server.beans.device.trigger.TriggerParam;
 import org.doomday.server.beans.device.trigger.ValParam;
-import org.doomday.server.eventbus.rx.IEventBus;
-import org.doomday.server.protocol.event.DeviceMetaStoreEvent;
-import org.doomday.server.protocol.event.DeviceSensorEvent;
-import org.doomday.server.protocol.event.DeviceTriggerEvent;
+import org.doomday.server.event.DeviceProfileUpdateEvent;
+import org.doomday.server.event.DeviceSensorEvent;
+import org.doomday.server.event.DeviceTriggerEvent;
+import org.doomday.server.eventbus.IEventBus;
+import org.doomday.server.model.IDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -42,18 +43,19 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	
 	
 	private final Device device;
-	private DeviceMeta deviceMeta;
+	private DeviceProfile deviceProfile;
 	private ProtocolState state = ProtocolState.DISAUTHED;
 	private final Queue<String> msgQueue = new ArrayDeque<>();
 	
 	@Autowired
 	IEventBus eventBus;
 	
+	@Autowired
+	IDeviceRepository deviceRepository;
 	
 	public ProtocolProcessor(Device device) {
 		this.device = device;
-		this.deviceMeta = device.getMeta();
-		
+		this.deviceProfile = device.getProfile();		
 	}
 	
 	
@@ -64,12 +66,13 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		if (device.getPincode()!=null){
 			msgQueue.add("CONNECT "+device.getPincode());
 		}
+		
 		eventBus.get("/device")
 		.ofType(DeviceTriggerEvent.class)
 		.filter(e->e.getDeviceId().equals(device.getId()))
 		.subscribe(e->{
 			String argString = e.getArgs().replaceAll("( {2,})", " ");
-			TriggerMeta trigger = deviceMeta.getTrigger(e.getTriggerId());
+			TriggerMeta trigger = deviceProfile.getTrigger(e.getTriggerId());
 			if (trigger==null) return;
 			if (trigger.validate(argString.split(" "))){
 				msgQueue.add(e.getTriggerId()+" "+argString);
@@ -107,8 +110,8 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		if (state!=ProtocolState.DISAUTHED) throw new IllegalStateException("Illegal state to parse ACCEPT");
 		this.state = ProtocolState.AUTHED;
 		
-		if (device.getMeta()==null){
-			msgQueue.add("INFO");
+		if (device.getProfile()==null){
+			msgQueue.add("PROFILE");
 		} else {
 			msgQueue.add("READY");
 		}
@@ -117,11 +120,11 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	
 	private void parseReady(StringTokenizer st) {
 		if (state!=ProtocolState.AUTHED) throw new IllegalStateException("Illegal state to parse READY");
-		this.state = ProtocolState.READY;		
-		
-		if (device.getMeta()==null){			
-			eventBus.pub("/device", new DeviceMetaStoreEvent(deviceMeta,device.getDevSerial()));
-			device.setMeta(deviceMeta);
+		this.state = ProtocolState.READY;				
+		if (device.getProfile()==null){
+			device.setProfile(deviceProfile);
+			deviceRepository.updateDevice(device);
+			eventBus.pub("/device", new DeviceProfileUpdateEvent(deviceProfile,device.getId()));			
 		}
 	}
 	
@@ -133,7 +136,7 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		if (state!=ProtocolState.READY) throw new IllegalStateException("Illegal state to parse SET");
 		String sensorName = st.nextToken();
 		String sensorValue = st.nextToken();
-		SensorMeta s = device.getMeta().getSensor(sensorName);
+		SensorMeta s = device.getProfile().getSensor(sensorName);
 		if (s.validate(sensorValue)){
 			eventBus.pub("/device", new DeviceSensorEvent(device.getId(), sensorName, sensorValue));
 		}
@@ -163,11 +166,10 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		
 		TriggerMeta tm = new TriggerMeta(name,params.toArray(new TriggerParam[0]));		
 		
-		if (deviceMeta==null){
-			deviceMeta = new DeviceMeta();
-			device.setMeta(deviceMeta);					
+		if (deviceProfile==null){
+			deviceProfile = new DeviceProfile();						
 		}
-		deviceMeta.addTrigger(tm);
+		deviceProfile.addTrigger(tm);
 		}
 
 	private TriggerParam parseFlagParam(String name, StringTokenizer st) {
@@ -229,11 +231,10 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		}
 		
 		if (s!=null){			
-			if (deviceMeta==null){
-				deviceMeta = new DeviceMeta();
-				device.setMeta(deviceMeta);
+			if (deviceProfile==null){
+				deviceProfile = new DeviceProfile();
 			}
-			deviceMeta.addSensor(s);
+			deviceProfile.addSensor(s);
 		}
 		
 	}

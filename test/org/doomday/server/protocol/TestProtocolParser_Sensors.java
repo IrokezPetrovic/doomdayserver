@@ -1,7 +1,7 @@
 package org.doomday.server.protocol;
 
 import org.doomday.server.beans.device.Device;
-import org.doomday.server.beans.device.DeviceMeta;
+import org.doomday.server.beans.device.DeviceProfile;
 import org.doomday.server.beans.device.sensor.BoolSensorMeta;
 import org.doomday.server.beans.device.sensor.FlagSensorMeta;
 import org.doomday.server.beans.device.sensor.FloatSensorMeta;
@@ -22,7 +22,7 @@ public class TestProtocolParser_Sensors {
 	public void testSensorIntMsg(){
 		pp.read("ACCEPT");
 		pp.read("SENSOR INT SENSOR1 (10,30)");
-		DeviceMeta meta = device.getMeta();
+		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
 		assertNotNull(sm);
@@ -36,7 +36,7 @@ public class TestProtocolParser_Sensors {
 	public void testSensorFloatMsg(){
 		pp.read("ACCEPT");
 		pp.read("SENSOR FLOAT SENSOR1 (3.14,5.15)");
-		DeviceMeta meta = device.getMeta();
+		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
 		assertNotNull(sm);
@@ -51,7 +51,7 @@ public class TestProtocolParser_Sensors {
 	public void testSensorStrMsg(){
 		pp.read("ACCEPT");
 		pp.read("SENSOR STR SENSOR1");
-		DeviceMeta meta = device.getMeta();
+		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
 		assertNotNull(sm);
@@ -62,7 +62,7 @@ public class TestProtocolParser_Sensors {
 	public void testSensorBoolMsg(){
 		pp.read("ACCEPT");
 		pp.read("SENSOR BOOL SENSOR1");
-		DeviceMeta meta = device.getMeta();
+		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
 		assertNotNull(sm);
@@ -73,7 +73,7 @@ public class TestProtocolParser_Sensors {
 	public void testSensorValMsg(){
 		pp.read("ACCEPT");
 		pp.read("SENSOR VAL SENSOR1 (OPTION1,OPTION2,OPTION3)");
-		DeviceMeta meta = device.getMeta();
+		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
 		assertNotNull(sm);
@@ -89,7 +89,7 @@ public class TestProtocolParser_Sensors {
 	public void testSensorFlagMsg(){
 		pp.read("ACCEPT");
 		pp.read("SENSOR FLAG SENSOR1 (OPTION1,OPTION2,OPTION3)");
-		DeviceMeta meta = device.getMeta();
+		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
 		assertNotNull(sm);

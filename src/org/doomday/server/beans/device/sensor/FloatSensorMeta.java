@@ -34,4 +34,9 @@ public class FloatSensorMeta extends SensorMeta{
 		return "float";
 	}
 
+	@Override
+	public String getDef() {
+		return String.format("FLOAT (%f,%f)", min,max);
+	}
+
 }

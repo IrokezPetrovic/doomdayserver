@@ -1,5 +1,5 @@
 import org.doomday.server.beans.device.Device;
-import org.doomday.server.beans.device.DeviceMeta;
+import org.doomday.server.beans.device.DeviceProfile;
 import org.doomday.server.beans.device.sensor.BoolSensorMeta;
 import org.doomday.server.beans.device.sensor.FlagSensorMeta;
 import org.doomday.server.beans.device.sensor.FloatSensorMeta;
@@ -26,7 +26,7 @@ public class JsonTest {
 		ObjectMapper m = new ObjectMapper();
 		//m.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		Device d = new Device("DOOMDAYDIY:TEAPOT:0.0.1", "12345");
-		DeviceMeta meta = new DeviceMeta();
+		DeviceProfile meta = new DeviceProfile();
 		
 		meta.addSensor(new IntSensorMeta("INTSENSOR", 10, 20));
 		meta.addSensor(new FloatSensorMeta("FLOATSENSOR", 3.14f, 5.15f));
@@ -34,7 +34,7 @@ public class JsonTest {
 		meta.addSensor(new BoolSensorMeta("BOOLSENSOR"));
 		meta.addSensor(new ValSensorMeta("VALSENSOR", new String[]{"OPTION1","OPTION2","OPTION3"}));
 		meta.addSensor(new FlagSensorMeta("FLAGSENSOR", new String[]{"FLAG1","FLAG2","FLAG3"}));		
-		d.setMeta(meta);
+		d.setProfile(meta);
 		
 		TriggerMeta t = new TriggerMeta("TRIGGER1", new TriggerParam[]{
 				new IntParam("INTPARAM",10,100),

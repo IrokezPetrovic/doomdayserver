@@ -12,4 +12,5 @@ public abstract class SensorMeta {
 
 	public abstract boolean validate(String sensorValue);
 	public abstract String getType();
+	public abstract String getDef();
 }

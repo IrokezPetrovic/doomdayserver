@@ -16,4 +16,9 @@ public class BoolSensorMeta extends SensorMeta{
 		return "bool";
 	}
 
+	@Override
+	public String getDef() {
+		return "BOOL";
+	}
+
 }
