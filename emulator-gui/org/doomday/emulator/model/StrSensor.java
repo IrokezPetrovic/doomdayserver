@@ -15,15 +15,11 @@ public class StrSensor extends Sensor{
 		this.model = model;
 	}
 
+	@Override
+	public boolean validate(String value) {
+		return value!=null;
+	}
+
 
 	
-	@Override
-	public void set(Object value) {
-		this.value = value.toString();
-	}
-
-	@Override
-	public String get() {
-		return value;
-	}
 }

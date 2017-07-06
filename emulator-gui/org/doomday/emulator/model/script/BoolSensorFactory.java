@@ -6,8 +6,10 @@ import jdk.nashorn.api.scripting.AbstractJSObject;
 @SuppressWarnings("restriction")
 public class BoolSensorFactory extends AbstractJSObject{
 	
+	private DeviceModel model;
+
 	public BoolSensorFactory(DeviceModel model) {
-		
+		this.model = model;
 	}
 
 	@Override
@@ -19,7 +21,7 @@ public class BoolSensorFactory extends AbstractJSObject{
 	public Object call(Object thiz, Object... args) {
 		if (args.length==1){
 			String name = (String) args[0];			
-			return new BoolSensor(name);
+			return new SensorWrapper(new BoolSensor(name),model);
 		}
 		return null;
 				

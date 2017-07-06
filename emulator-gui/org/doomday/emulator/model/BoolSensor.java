@@ -18,12 +18,7 @@ public class BoolSensor extends Sensor{
 
 	
 	@Override
-	public void set(Object value) {
-		this.value = Boolean.valueOf(value.toString());
-	}
-
-	@Override
-	public String get() {
-		return value.toString();
+	public boolean validate(String value) {
+		return value!=null&&(value.equalsIgnoreCase("true")||value.equalsIgnoreCase("false"));
 	}
 }

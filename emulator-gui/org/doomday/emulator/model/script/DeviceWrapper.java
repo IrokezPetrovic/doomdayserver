@@ -26,9 +26,19 @@ public class DeviceWrapper {
 		model.setDevSerial(serial);
 	}
 	
-	public Sensor sensor(Sensor sensor){
-		model.addSensor(sensor);
-		return sensor;
+	public void sensor(SensorWrapper sensor){
+		model.addSensor(sensor.getSensor());		
+	}
+	
+	public void trigger(TriggerWrapper t){
+		model.addTrigger(t.getTrigger());
+	}
+	
+	public String getPin(){
+		return model.getPincode();
+	}
+	public void setPin(String pin){
+		model.setPincode(pin);
 	}
 
 }

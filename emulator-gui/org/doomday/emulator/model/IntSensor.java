@@ -17,15 +17,14 @@ public class IntSensor extends Sensor{
 	}
 
 
-	
 	@Override
-	public void set(Object value) {
-		Integer v = (Integer) value;		
-		this.value = v;
-	}
-
-	@Override
-	public String get() {
-		return String.valueOf(value);
+	public boolean validate(String value) {
+		if (value==null||value.isEmpty()) return false;
+		try{
+			Integer.valueOf(value);
+			return true;
+		} catch (NumberFormatException e){
+			return false;
+		}
 	}
 }

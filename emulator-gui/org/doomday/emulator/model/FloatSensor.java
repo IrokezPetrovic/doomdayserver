@@ -16,16 +16,19 @@ public class FloatSensor extends Sensor{
 		this.model = model;
 	}
 
+	@Override
+	public boolean validate(String value) {
+		if (value==null||value.isEmpty()) return false;
+		try{
+			Float.valueOf(value);
+			return true;
+		} catch (NumberFormatException e){
+			return false;
+		}
+		
+	}
+
 
 	
-	@Override
-	public void set(Object value) {
-		Float v = Float.valueOf(value.toString());		
-		this.value = v;
-	}
-
-	@Override
-	public String get() {
-		return String.valueOf(value);
-	}
+	
 }

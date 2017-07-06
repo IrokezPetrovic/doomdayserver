@@ -5,6 +5,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -14,6 +19,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -64,6 +70,9 @@ public class MainForm extends JFrame implements IMainForm{
 	@Override
 	public void log(String line){
 		console.setText(console.getText()+line+"\n");
+		invalidate();
+		JScrollBar verticalScrollBar = consoleScroll.getVerticalScrollBar();
+		verticalScrollBar.setValue(verticalScrollBar.getMaximum());
 	}
 	private Consumer<StartParams> onStart;
 	private Consumer<Boolean> onStop;
@@ -134,11 +143,55 @@ public class MainForm extends JFrame implements IMainForm{
 				
 		sidePanel.setSize(100, 100);
 		sidePanel.setPreferredSize(new Dimension(300, 300));
+		JButton btnSave = new JButton("LOAD SCRIPT");
+		sidePanel.add(btnSave);
+		btnSave.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					BufferedReader br = new BufferedReader(new FileReader("/tmp/devscript.js"));
+					String l = null;
+					StringBuilder sb = new StringBuilder();
+					while((l = br.readLine())!=null){
+						sb.append(l);
+						sb.append("\n");
+					}
+					br.close();
+					codeEditor.setText(sb.toString());
+					
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
 		
+		JButton btnLoad = new JButton("SAVE SCRIPT");
+		sidePanel.add(btnLoad);
+		btnLoad.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					FileWriter fw = new FileWriter("/tmp/devscript.js");
+					fw.write(codeEditor.getText());
+					fw.flush();
+					fw.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		mcastIp = new JTextField();						
 		mcastIp.setPreferredSize(new Dimension(100, 20));
-		mcastIp.setText("239.10.10.10");
+		mcastIp.setText("239.12.13.14");
 		mcastPort = new JTextField();
 		mcastPort.setText("27015");
 		ipPort = new JTextField();		
@@ -154,8 +207,7 @@ public class MainForm extends JFrame implements IMainForm{
 		sidePanel.add(new JLabel("IP PORT:"));
 		sidePanel.add(ipPort);
 		
-		
-		
+				
 		connectStatus = new JLabel("CONNECTED:"+String.valueOf(connected));
 		connectStatus.setForeground(Color.RED);
 		sidePanel.add(connectStatus);
@@ -184,8 +236,7 @@ public class MainForm extends JFrame implements IMainForm{
 					
 					if (onStart!=null){
 						startBtn.setEnabled(false);
-						onStart.accept(new StartParams(mcastIp.getText(), Integer.valueOf(mcastPort.getText()),Integer.valueOf(ipPort.getText())));						
-						
+						onStart.accept(new StartParams(mcastIp.getText(), Integer.valueOf(mcastPort.getText()),Integer.valueOf(ipPort.getText())));												
 					}
 				} else {
 					if (onStop!=null){
@@ -214,11 +265,10 @@ public class MainForm extends JFrame implements IMainForm{
 		console = new JTextArea();
 		
 		console.setEditable(false);
-		JScrollPane consoleScroll = new JScrollPane(console);
+		consoleScroll = new JScrollPane(console);
 		consoleScroll.setAutoscrolls(true);
 		consoleScroll.setPreferredSize(new Dimension(100, 100));
-		panel.add(consoleScroll,BorderLayout.SOUTH);
-		
+		panel.add(consoleScroll,BorderLayout.SOUTH);		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		
@@ -231,6 +281,7 @@ public class MainForm extends JFrame implements IMainForm{
 	private JTextField mcastIp;
 	private JTextField mcastPort;
 	private JTextField ipPort;
+	private JScrollPane consoleScroll;
 	
 	
 

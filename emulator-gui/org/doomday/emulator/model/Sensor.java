@@ -20,8 +20,15 @@ public abstract class Sensor {
 		return def;
 	}
 	
+	@Override
+	public String toString() {
+		return "SENSOR "+def;
+	}
+	
 		
-	public abstract void set(Object value);
-	public abstract String get();
+	//public abstract void set(Object value);
+	//public abstract String get();
+	
+	public abstract boolean validate(String value);
 	
 }
