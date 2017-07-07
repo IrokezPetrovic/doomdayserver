@@ -2,6 +2,7 @@ package org.doomday.server.protocol;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import org.doomday.server.ITransport;
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.DeviceProfile;
 import org.doomday.server.beans.device.trigger.BoolParam;
@@ -16,7 +17,14 @@ import org.doomday.server.beans.device.trigger.ValParam;
 public class TestProtocolParser_Triggers {
 	
 	Device device = new Device("","");
-	ProtocolProcessor pp = new ProtocolProcessor(device);
+	ProtocolProcessor pp = new ProtocolProcessor(device,new ITransport() {
+
+		@Override
+		public void disconnect(IProtocolProcessor protocolProcessor) {
+			// TODO Auto-generated method stub
+			
+		}
+	});
 	
 	private DeviceProfile checkMeta(Device d){
 		DeviceProfile meta = d.getProfile();

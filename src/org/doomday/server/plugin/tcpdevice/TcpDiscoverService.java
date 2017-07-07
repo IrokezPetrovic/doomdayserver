@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.Selector;
 
 import javax.annotation.PostConstruct;
@@ -46,16 +47,18 @@ public class TcpDiscoverService implements Runnable{
 		InetAddress mcastAddr = InetAddress.getByName(mcastGroup);			
 		mcastSock = new MulticastSocket(new InetSocketAddress(mcastPort));				
 		mcastSock.joinGroup(mcastAddr);					
-										
-		t = new Thread(this);
+							
+		
+		
+		
+		t = new Thread(this,"TcpDiscoverThread");
 		t.start();
 	}
 		
 	@PreDestroy	
 	public void destroy(){
-		t.interrupt();
-		mcastSock.close();	
-		
+		mcastSock.close();
+		t.stop();					
 	}
 		
 	@Override
@@ -64,7 +67,7 @@ public class TcpDiscoverService implements Runnable{
 			byte[] buff = new byte[1024];
 			DatagramPacket dp = new DatagramPacket(buff, buff.length);		
 			try {
-				mcastSock.receive(dp);
+				mcastSock.receive(dp);				
 				parsePacket(dp);
 			} catch (IOException e) {
 				//e.printStackTrace();
@@ -90,7 +93,7 @@ public class TcpDiscoverService implements Runnable{
 	private void onDiscover(String ipAddr,String devClass, String devSerial){		
 		Device device = deviceRepository.getDevice(devClass,devSerial);		
 		eventBus.pub("/device", new DeviceDiscoveredEvent(device));
-		if (device.getPincode()!=null){
+		if (device.getPincode()!=null&&device.getPincode().length()>0){
 			tcpWorker.appendDevice(ipAddr,device);
 		}
 	}

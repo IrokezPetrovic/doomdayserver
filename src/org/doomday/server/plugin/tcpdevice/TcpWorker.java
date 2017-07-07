@@ -3,6 +3,7 @@ package org.doomday.server.plugin.tcpdevice;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.doomday.server.ITransport;
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.event.DeviceForgetEvent;
 import org.doomday.server.eventbus.IEventBus;
@@ -27,7 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TcpWorker implements ITcpWorker,Runnable{
+public class TcpWorker implements ITcpWorker,Runnable,ITransport{
 	private Map<SelectionKey, IProtocolProcessor> processors = new HashMap<>();
 	
 	@Autowired
@@ -52,8 +54,9 @@ public class TcpWorker implements ITcpWorker,Runnable{
 				IProtocolProcessor p = processors.get(k);
 				if (p.getDevice().getId().equals(id)){
 					System.out.println("Close chan for "+id);
-					closeChan(k);
-					
+					k.channel().close();
+					processors.remove(k);
+					break;
 				}
 			}
 		});
@@ -64,24 +67,23 @@ public class TcpWorker implements ITcpWorker,Runnable{
 	
 	@PreDestroy
 	public void destroy(){
+		processors.keySet().forEach(s->{
+			try {
+				s.channel().close();
+			} catch (IOException|CancelledKeyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			};
+		});
 		
-		try {
-			selector.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		t.interrupt();
+		t.stop();
 	}
 	Selector selector = null;
 	
 	@Override
 	public void run() {
-		try {
-			//System.out.println("RUN");
-			//selector = SelectorProvider.provider().openSelector();
-			while(selector.select(10)>-1){
-//				System.out.println("SELECT");
+		try {			
+			while(!t.isInterrupted()&&selector.selectNow()>-1){				
 				Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
 				while(iterator.hasNext()){
 					SelectionKey key = iterator.next();
@@ -95,9 +97,11 @@ public class TcpWorker implements ITcpWorker,Runnable{
 								writeChan(key);
 							}
 						}
-					} catch (Exception e){		
+					} catch (IOException e){		
 						closeChan(key);
-					}
+					} catch (CancelledKeyException e){
+						e.printStackTrace();
+					} 
 				}
 			}
 		} catch (IOException|ClosedSelectorException e) {
@@ -109,9 +113,10 @@ public class TcpWorker implements ITcpWorker,Runnable{
 	
 
 	private void closeChan(SelectionKey key) throws IOException{
-		IProtocolProcessor pp = processors.get(key);
+		IProtocolProcessor pp = processors.get(key);		
 		if (pp==null)
 			return;
+		processors.remove(key);
 		Device d = pp.getDevice();
 		d.setConnectionStatus(Device.ConnectionStatus.OFFLINE);
 		SocketChannel chan = (SocketChannel) key.channel();
@@ -121,11 +126,12 @@ public class TcpWorker implements ITcpWorker,Runnable{
 
 
 
-	private void writeChan(SelectionKey key) throws IOException{
+	private void writeChan(SelectionKey key) throws IOException,CancelledKeyException{
 
 		IProtocolProcessor pp = processors.get(key);
 		if (pp==null)
 			return;
+		
 		Queue<String> q = pp.getWriteQueue();
 		
 		if (q.size()==0){
@@ -139,20 +145,23 @@ public class TcpWorker implements ITcpWorker,Runnable{
 		buff.put(bytes);
 		buff.flip();
 		SocketChannel chan = (SocketChannel) key.channel();
-		chan.write(buff);
+		int writed = chan.write(buff);
+		if (writed==0){
+			closeChan(key);
+		}
 		
 	}
 
 
 
-	private void readChan(SelectionKey key) throws IOException{
+	private void readChan(SelectionKey key) throws IOException,CancelledKeyException{
 		IProtocolProcessor pp = processors.get(key);
 		if (pp==null)
 			return;
 		SocketChannel chan = (SocketChannel) key.channel();
 		ByteBuffer buf = ByteBuffer.allocate(4096);
 		int readed = chan.read(buf);
-		if (readed>0){
+		if (readed>-1){
 			String payload = new String(buf.array());			
 			Stream.of(payload.trim().split("\n"))
 			.map(String::trim)
@@ -171,10 +180,27 @@ public class TcpWorker implements ITcpWorker,Runnable{
 			SocketChannel chan = SocketChannel.open(new InetSocketAddress(ipAddr, tcpPort));						
 			chan.configureBlocking(false);			
 			SelectionKey key = chan.register(selector, chan.validOps());			
-			processors.put(key, ppf.createProcessor(device));			
+			processors.put(key, ppf.createProcessor(device,this));			
 		} catch (IOException e) {			
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void disconnect(IProtocolProcessor protocolProcessor) {
+		for (SelectionKey k:processors.keySet()){
+			if (processors.get(k).equals(protocolProcessor)){
+				processors.remove(k);
+				try {
+					k.channel().close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
+		}
+		
 	}
 		
 	

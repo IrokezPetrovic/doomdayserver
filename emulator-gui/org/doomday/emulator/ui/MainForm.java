@@ -177,6 +177,7 @@ public class MainForm extends JFrame implements IMainForm{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (codeEditor.getText().trim().isEmpty()) return;
 				try {
 					FileWriter fw = new FileWriter("/tmp/devscript.js");
 					fw.write(codeEditor.getText());

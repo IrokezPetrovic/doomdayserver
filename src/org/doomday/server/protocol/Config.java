@@ -1,9 +1,11 @@
 package org.doomday.server.protocol;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 
+import org.doomday.server.ITransport;
 import org.doomday.server.beans.device.Device;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -19,8 +21,8 @@ public class Config {
 	
 	@Bean
 	@Scope("prototype")
-	IProtocolProcessor protocolProtocolProcessor(Device d){
-		return new ProtocolProcessor(d);
+	IProtocolProcessor protocolProtocolProcessor(Device d,ITransport transport){
+		return new ProtocolProcessor(d,transport);
 	}
 	
 	@PostConstruct
@@ -28,12 +30,24 @@ public class Config {
 		System.out.println("CfgInit()");
 	}
 	@Bean
-	Function<Device, IProtocolProcessor> protocolProcessorSupplier(){
+	Function<Device, IProtocolProcessor> _protocolProcessorSupplier(){		
 		return new Function<Device, IProtocolProcessor>() {
 			@Override
 			public IProtocolProcessor apply(Device d) {
 				return ctx.getBean(IProtocolProcessor.class,d);
 			}
+		};
+	}
+	
+	@Bean
+	BiFunction<Device, ITransport, IProtocolProcessor> protocolProcessorSupplier(){
+		return new BiFunction<Device,ITransport, IProtocolProcessor>() {
+
+			@Override
+			public IProtocolProcessor apply(Device t, ITransport u) {				
+				return ctx.getBean(IProtocolProcessor.class,t,u);
+			}
+			
 		};
 	}
 

@@ -133,7 +133,6 @@ public class ScriptTest {
 		System.out.println(m.getWritrable());
 	}
 	
-	
-	
+			
 	
 }

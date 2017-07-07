@@ -1,5 +1,6 @@
 package org.doomday.server.protocol;
 
+import org.doomday.server.ITransport;
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.DeviceProfile;
 import org.doomday.server.beans.device.sensor.BoolSensorMeta;
@@ -17,7 +18,14 @@ import static org.junit.Assert.*;
 public class TestProtocolParser_Sensors {
 
 	Device device = new Device("","");
-	ProtocolProcessor pp = new ProtocolProcessor(device);
+	ProtocolProcessor pp = new ProtocolProcessor(device,new ITransport() {
+
+		@Override
+		public void disconnect(IProtocolProcessor protocolProcessor) {
+			// TODO Auto-generated method stub
+			
+		}
+	});
 	@Test
 	public void testSensorIntMsg(){
 		pp.read("ACCEPT");

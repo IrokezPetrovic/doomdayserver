@@ -23,6 +23,7 @@ public class Device implements Mergeable<Device>{
 	
 	private Map<String,String> sensorData = new HashMap<>();
 	private ConnectionStatus connectionStatus = ConnectionStatus.DISCOVERED;
+	private Map<String, String> values;
 
 	public void merge(Device d) {
 		this.pincode = d.pincode!=null?d.pincode:this.pincode;
@@ -95,6 +96,14 @@ public class Device implements Mergeable<Device>{
 		
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public void setValues(Map<String, String> values) {
+		this.values = values;		
+	}
+	
+	public Map<String, String> getValues() {
+		return values;
 	}
 	
 

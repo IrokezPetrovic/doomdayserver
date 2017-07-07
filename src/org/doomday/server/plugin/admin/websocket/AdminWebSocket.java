@@ -10,6 +10,9 @@ import javax.annotation.PostConstruct;
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.event.DeviceDiscoveredEvent;
 import org.doomday.server.event.DeviceProfileUpdateEvent;
+import org.doomday.server.event.DeviceSensorEvent;
+import org.doomday.server.event.dashboard.DashboardRemoveEvent;
+import org.doomday.server.event.dashboard.DashboardSavedEvent;
 import org.doomday.server.eventbus.IEventBus;
 import org.doomday.server.model.IDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +61,12 @@ public class AdminWebSocket extends TextWebSocketHandler{
 			sendMessage(mapper.writeValueAsString(msg));
 		});
 		
+		bus.ofType(DeviceSensorEvent.class)
+		.subscribe(e->{
+			WebSocketEventMessage msg = new WebSocketEventMessage("/device/sensor/value", e);
+			sendMessage(mapper.writeValueAsString(msg));
+		});
+		
 		eventBus.get("/device")
 		.ofType(DeviceProfileUpdateEvent.class)
 		.subscribe(e->{			
@@ -65,6 +74,20 @@ public class AdminWebSocket extends TextWebSocketHandler{
 			WebSocketEventMessage msg = new WebSocketEventMessage("/device/profile/updated", d);
 			sendMessage(mapper.writeValueAsString(msg));
 		});
+		
+		Observable<Object> dashboardBus = eventBus.get("/dashboard");
+		dashboardBus.ofType(DashboardSavedEvent.class)
+		.subscribe(e->{
+			WebSocketEventMessage msg = new WebSocketEventMessage("/dashboard/saved", e.getDashboard());
+			sendMessage(mapper.writeValueAsString(msg));
+		});
+		
+		dashboardBus.ofType(DashboardRemoveEvent.class)
+		.subscribe(e->{
+			WebSocketEventMessage msg = new WebSocketEventMessage("/dashboard/removed", e.getDashboard());
+			sendMessage(mapper.writeValueAsString(msg));
+		});
+				
 						
 	}
 	

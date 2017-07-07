@@ -47,6 +47,7 @@ public class DeviceWorker implements Runnable {
 	}
 
 	public void disconnect() {
+		model.setState(State.DISCONNECTED);
 		if (clientKey != null) {
 			try {
 				clientKey.channel().close();

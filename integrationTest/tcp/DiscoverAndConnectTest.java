@@ -3,6 +3,7 @@ package tcp;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+import org.doomday.server.ITransport;
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.sensor.FloatSensorMeta;
 import org.doomday.server.beans.device.sensor.IntSensorMeta;
@@ -96,17 +97,17 @@ public class DiscoverAndConnectTest {
 		
 		@Bean
 		@Scope("prototype")
-		IProtocolProcessor protocolProcessor(Device device){			
-			return new ProtocolProcessor(device);
+		IProtocolProcessor protocolProcessor(Device device,ITransport transport){			
+			return new ProtocolProcessor(device,transport);
 		}
 				
 		@Bean
 		IProtocolProcessorFactory protocolProcessorFactory(){			
 			return new IProtocolProcessorFactory() {				
+				
 				@Override
-				public IProtocolProcessor createProcessor(Device device) {	
-					return ctx.getBean(IProtocolProcessor.class, device);
-					
+				public IProtocolProcessor createProcessor(Device device, ITransport transport) {
+					return ctx.getBean(IProtocolProcessor.class, device,transport);					
 				}
 			};
 			

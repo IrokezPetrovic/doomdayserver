@@ -50,6 +50,8 @@ public class DeviceModel {
 		if (state!=State.ARMED) return;
 		String triggerName = st.nextToken();
 		Trigger t = triggers.get(triggerName);
+		if (t==null) return;
+		
 		TriggerArg[] args = t.getArgs();
 		String[] strArgs = new String[args.length];
 		for (int i=0;i<args.length;i++){
@@ -80,7 +82,7 @@ public class DeviceModel {
 			this.state = State.AUTHED;
 			msgQueue.add("ACCEPT");
 		} else {
-			msgQueue.add("REJECT");
+			msgQueue.add("DENY");
 		}
 	}
 	

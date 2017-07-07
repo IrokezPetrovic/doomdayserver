@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
 
+import org.doomday.server.ITransport;
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.DeviceProfile;
 import org.doomday.server.beans.device.sensor.BoolSensorMeta;
@@ -31,6 +32,7 @@ import org.doomday.server.event.DeviceSensorEvent;
 import org.doomday.server.event.DeviceTriggerEvent;
 import org.doomday.server.eventbus.IEventBus;
 import org.doomday.server.model.IDeviceRepository;
+import org.doomday.server.model.ISensorValueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -46,16 +48,21 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	private DeviceProfile deviceProfile;
 	private ProtocolState state = ProtocolState.DISAUTHED;
 	private final Queue<String> msgQueue = new ArrayDeque<>();
-	
+	private final ITransport transport;
 	@Autowired
 	IEventBus eventBus;
 	
 	@Autowired
 	IDeviceRepository deviceRepository;
 	
-	public ProtocolProcessor(Device device) {
+	@Autowired
+	ISensorValueRepository sensorValueRepository;
+	
+	
+	public ProtocolProcessor(Device device,ITransport transport) {
 		this.device = device;
-		this.deviceProfile = device.getProfile();		
+		this.deviceProfile = device.getProfile();
+		this.transport = transport;
 	}
 	
 	
@@ -101,8 +108,9 @@ public class ProtocolProcessor implements IProtocolProcessor{
 
 	
 	private void parseDeny(StringTokenizer st) throws IllegalStateException{
-		if (state!=ProtocolState.DISAUTHED) throw new IllegalStateException("Illegal state to parse DENY");
-		msgQueue.add("CONNECT "+device.getPincode());		
+		if (state!=ProtocolState.DISAUTHED) throw new IllegalStateException("Illegal state to parse DENY");		
+		//msgQueue.add("CONNECT "+device.getPincode());
+		transport.disconnect(this);
 	}
 
 
@@ -137,8 +145,9 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		String sensorName = st.nextToken();
 		String sensorValue = st.nextToken();
 		SensorMeta s = device.getProfile().getSensor(sensorName);
+		
 		if (s.validate(sensorValue)){
-			eventBus.pub("/device", new DeviceSensorEvent(device.getId(), sensorName, sensorValue));
+			sensorValueRepository.put(device.getId(),sensorName,sensorValue);			
 		}
 	}
 
