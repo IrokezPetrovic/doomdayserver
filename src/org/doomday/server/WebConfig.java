@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -19,14 +22,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 @Configuration
 @ComponentScan("org.doomday.server")
 @EnableWebSocket
-public class WebConfig implements WebSocketConfigurer{
+@EnableWebMvc
+public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfigurer{
 	@Autowired
 	ApplicationContext ctx;
 	
 	@Bean
 	@Qualifier("discover.mcastgroup")
 	public String macastGroup(){
-		return "239.12.13.14";
+//		return "239.12.13.14";
+		return "239.141.12.12";
 	}
 	
 	@Bean
@@ -57,4 +62,10 @@ public class WebConfig implements WebSocketConfigurer{
 		
 		registry.addHandler(ctx.getBean(WebClientWebSocket.class), "/webclient/event.ws");
 	}
+	
+	@Bean(name="multipartResolver")
+	public CommonsMultipartResolver multipartResolver(){
+		return new CommonsMultipartResolver();
+	}
+	
 }

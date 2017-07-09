@@ -79,8 +79,8 @@ public class TcpDiscoverService implements Runnable{
 	private void parsePacket(DatagramPacket dp) {
 		String localAddr = dp.getAddress().getHostAddress();		
 		String[] discoveryString = new String(dp.getData()).trim().split(" ");
-		System.out.println("Recieved "+new String(dp.getData())+" from "+localAddr);
-		if (discoveryString.length!=2){
+		System.out.println("Recieved "+new String(dp.getData())+" from "+localAddr+";len="+discoveryString.length);
+		if (discoveryString.length<2){
 			return;
 		}
 		String devClass = discoveryString[0];

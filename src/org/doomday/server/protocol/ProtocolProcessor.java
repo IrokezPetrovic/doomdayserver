@@ -89,18 +89,22 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	
 				
 	public void read(String content){
-		StringTokenizer st = new StringTokenizer(content, " ");
-		String cmd = st.nextToken();
-		switch (cmd){
-		
-			case "ACCEPT": parseAccept(st);break;
-			case "DENY": parseDeny(st);break;
+		try{
+			StringTokenizer st = new StringTokenizer(content, " ");
+			String cmd = st.nextToken();
+			switch (cmd){
 			
-			case "SENSOR": parseSensor(st);break;
-			case "TRIGGER": parseTrigger(st);break;
-			
-			case "READY": parseReady(st);break;			
-			case "SET": parseSet(st);break;
+				case "ACCEPT": parseAccept(st);break;
+				case "DENY": parseDeny(st);break;
+				
+				case "SENSOR": parseSensor(st);break;
+				case "TRIGGER": parseTrigger(st);break;
+				
+				case "READY": parseReady(st);break;			
+				case "SET": parseSet(st);break;
+				
+			}
+		} catch (NoSuchElementException e){
 			
 		}
 		
@@ -142,11 +146,13 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	 */
 	private void parseSet(StringTokenizer st) {	
 		if (state!=ProtocolState.READY) throw new IllegalStateException("Illegal state to parse SET");
-		String sensorName = st.nextToken();
-		String sensorValue = st.nextToken();
-		SensorMeta s = device.getProfile().getSensor(sensorName);
-		
-		if (s.validate(sensorValue)){
+		String sensorName = st.nextToken().trim();
+		String sensorValue = st.nextToken().trim();
+		SensorMeta s = deviceProfile.getSensor(sensorName);
+		if (s==null){
+			System.out.println("No such sensor '"+sensorName+"';");
+		}
+		if (s!=null&&s.validate(sensorValue)){
 			sensorValueRepository.put(device.getId(),sensorName,sensorValue);			
 		}
 	}
@@ -223,8 +229,8 @@ public class ProtocolProcessor implements IProtocolProcessor{
 	 */
 	private void parseSensor(StringTokenizer st) {
 		if (state!=ProtocolState.AUTHED) throw new IllegalStateException("Illegal state to parse SENSOR");
-		String type = st.nextToken();
-		String name = st.nextToken();
+		String name = st.nextToken().trim();
+		String type = st.nextToken().trim();		
 		SensorMeta s = null;
 		try{
 			switch(type){

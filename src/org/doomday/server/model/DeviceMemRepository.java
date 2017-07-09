@@ -23,7 +23,7 @@ public class DeviceMemRepository implements IDeviceRepository{
 	
 	@PostConstruct
 	public void init(){
-							
+			
 	}
 	
 	@Override

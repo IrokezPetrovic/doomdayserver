@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -20,8 +22,10 @@ public class WidgetCtrl {
 	
 	@RequestMapping(path="/add",method=RequestMethod.POST)
 	@ResponseBody
-	public boolean addWidget(String[] dashboards,Widget widget){
-		widgetRepo.addWidget(dashboards,widget);
+	public boolean addWidget(@RequestParam("dashboards") String dashboards, @RequestParam("widget") String widget){
+		System.out.println("Add widgets "+widget+" to "+dashboards);
+		//System.out.println(widget.getLabel()+" "+widget.getDescription());
+		//widgetRepo.addWidget(dashboards,widget);
 		return true;
 	}
 	
