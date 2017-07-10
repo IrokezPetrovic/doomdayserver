@@ -28,7 +28,6 @@ import org.doomday.server.beans.device.trigger.TriggerMeta;
 import org.doomday.server.beans.device.trigger.TriggerParam;
 import org.doomday.server.beans.device.trigger.ValParam;
 import org.doomday.server.event.DeviceProfileUpdateEvent;
-import org.doomday.server.event.DeviceSensorEvent;
 import org.doomday.server.event.DeviceTriggerEvent;
 import org.doomday.server.eventbus.IEventBus;
 import org.doomday.server.model.IDeviceRepository;

@@ -15,7 +15,7 @@ public class FlagSensor extends Sensor{
 		super(name);
 		this.flags = new HashSet<String>(Arrays.asList(flags));
 		this.value = new HashSet<>();
-		setDef(String.format("FLAG %s (%s)", name, String.join(",", flags)));		
+		setDef(String.format("%s FLAG (%s)", name, String.join(",", flags)));		
 	}
 	
 	public void setModel(DeviceModel model) {

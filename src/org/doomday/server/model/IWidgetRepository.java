@@ -4,6 +4,9 @@ import org.doomday.server.beans.Widget;
 
 public interface IWidgetRepository {
 
-	void addWidget(String[] dashboards, Widget widget);
+	
+	
+
+	Widget save(Widget w);
 
 }

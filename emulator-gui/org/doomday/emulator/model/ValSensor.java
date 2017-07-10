@@ -13,7 +13,7 @@ public class ValSensor extends Sensor{
 		super(name);
 		this.options = new HashSet<String>(Arrays.asList(options));
 		this.value = options[0];
-		setDef(String.format("VAL %s (%s)", name, String.join(",", options)));		
+		setDef(String.format("%s VAL (%s)", name, String.join(",", options)));		
 	}
 	
 	public void setModel(DeviceModel model) {

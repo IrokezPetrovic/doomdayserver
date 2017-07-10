@@ -9,7 +9,7 @@ public class FloatSensor extends Sensor{
 		this.min = min;
 		this.max = max;
 		this.value = min;
-		setDef(String.format("FLOAT %s (%f,%f)", name,min,max));		
+		setDef(String.format("%s FLOAT (%f,%f)", name,min,max));		
 	}
 	
 	public void setModel(DeviceModel model) {

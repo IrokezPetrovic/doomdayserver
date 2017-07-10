@@ -8,7 +8,7 @@ public class BoolSensor extends Sensor{
 		super(name);
 		
 		this.value = false;
-		setDef(String.format("BOOL %s", name));		
+		setDef(String.format("%s BOOL", name));		
 	}
 	
 	public void setModel(DeviceModel model) {

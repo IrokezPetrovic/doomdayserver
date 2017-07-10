@@ -1,10 +1,27 @@
 package org.doomday.server.beans;
 
-public class Widget {
+import org.doomday.server.misc.KeepAsJsonDeserializer;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+public class Widget implements Cloneable{
 	private String _id;
 	private String label;
 	private String description;
+	@JsonProperty("class")	
+	private String widgetClass;
+	private String icon;
+	
+	@JsonRawValue
+	@JsonDeserialize(using=KeepAsJsonDeserializer.class)
 	private String config;
+	private String dashboardId;
+	public Widget() {
+		
+	}
+	
 	public Widget(String _id, String label, String description, String config) {
 		super();
 		this._id = _id;
@@ -36,7 +53,32 @@ public class Widget {
 	public void setConfig(String config) {
 		this.config = config;
 	}
-	
+	public String getDashboardId() {
+		return dashboardId;
+	}
+	public void setDashboardId(String dashboardId) {
+		this.dashboardId = dashboardId;
+	}	
+	public String getWidgetClass() {
+		return widgetClass;
+	}	
+	public void setWidgetClass(String widgetClass) {
+		this.widgetClass = widgetClass;
+	}	
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+	public Widget clone(){
+		try {
+			return (Widget) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	
 	

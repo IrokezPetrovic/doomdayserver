@@ -1,5 +1,9 @@
 package org.doomday.server;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.doomday.server.plugin.webclient.websocket.WebClientWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -8,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ConversionServiceFactoryBean;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -53,6 +59,7 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfi
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
 		mapper.configure(Feature.IGNORE_UNKNOWN, true);
+		mapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_MISSING_VALUES, true);
 		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 		return mapper;
 	}
@@ -67,5 +74,21 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfi
 	public CommonsMultipartResolver multipartResolver(){
 		return new CommonsMultipartResolver();
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	List<Converter> convList;
+	
+	@Bean
+    ConversionServiceFactoryBean conversionService() {
+		System.out.println("Converters:"+convList.size());
+        ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();        
+        @SuppressWarnings("rawtypes")
+		Set<Converter> converters = new HashSet<>();               
+        convList.forEach(converters::add);
+        bean.setConverters(converters);        
+        System.out.println("REgister converters");
+        return bean;
+    }
 	
 }

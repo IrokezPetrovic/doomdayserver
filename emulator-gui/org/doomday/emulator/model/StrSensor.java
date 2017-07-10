@@ -8,7 +8,7 @@ public class StrSensor extends Sensor{
 		super(name);
 		
 		this.value = "";
-		setDef(String.format("STR %s", name));		
+		setDef(String.format("%s STR", name));		
 	}
 	
 	public void setModel(DeviceModel model) {

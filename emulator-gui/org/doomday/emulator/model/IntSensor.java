@@ -9,7 +9,7 @@ public class IntSensor extends Sensor{
 		this.min = min;
 		this.max = max;
 		this.value = min;
-		setDef(String.format("INT %s (%d,%d)", name,min,max));		
+		setDef(String.format("%s INT (%d,%d)", name,min,max));		
 	}
 	
 	public void setModel(DeviceModel model) {

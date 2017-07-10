@@ -1,7 +1,6 @@
 package org.doomday.server.protocol;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import org.doomday.server.ITransport;
 import org.doomday.server.beans.device.Device;

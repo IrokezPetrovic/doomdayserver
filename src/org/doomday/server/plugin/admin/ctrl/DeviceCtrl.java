@@ -3,8 +3,6 @@ package org.doomday.server.plugin.admin.ctrl;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BinaryOperator;
-import java.util.stream.Collectors;
 
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.model.IDeviceRepository;
@@ -16,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import reactor.fn.tuple.Tuple2;
 
 @Controller
 @RequestMapping(path="/admin/device/")

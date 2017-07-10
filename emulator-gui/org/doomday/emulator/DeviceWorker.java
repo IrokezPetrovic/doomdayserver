@@ -52,6 +52,7 @@ public class DeviceWorker implements Runnable {
 			try {
 				clientKey.channel().close();
 				clientKey = null;
+				readyToExchange = false;
 				if (onConnect != null) {
 					onConnect.accept(false);
 				}
@@ -91,6 +92,7 @@ public class DeviceWorker implements Runnable {
 	private SelectionKey serverKey;
 	private SelectionKey clientKey = null;
 	private boolean canSendDiscover = false;
+	private boolean readyToExchange = false;
 	private Selector selector;
 
 	@Override
@@ -180,16 +182,23 @@ public class DeviceWorker implements Runnable {
 
 	void writeToClient(SelectionKey key) throws IOException {
 		SocketChannel chan = (SocketChannel) key.channel();
-		while (model.hasWritable()) {			
-			String str = model.getWritrable();
-			logger.accept("Writed " + str);
-			String s = str + "\n";
-			chan.write(ByteBuffer.wrap(s.getBytes()));
+		if (!readyToExchange){
+			chan.write(ByteBuffer.wrap("HELO\r\n".getBytes()));
+			readyToExchange = true;
+			logger.accept("Enable exchange sending HELO");
+		} else {					
+			while (model.hasWritable()) {			
+				String str = model.getWritrable();
+				logger.accept("Writed " + str);
+				String s = str + "\n";
+				chan.write(ByteBuffer.wrap(s.getBytes()));
+			}
 		}
 	}
 
 	void closeClient(SelectionKey key) {
 		clientKey = null;
+		readyToExchange = false;
 		model.setState(State.DISCONNECTED);
 		logger.accept("Close connection");
 		try {
