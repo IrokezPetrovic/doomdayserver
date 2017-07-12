@@ -3,8 +3,6 @@ package org.doomday.server.beans;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class User {
 	private String _id;
 	private String username;
@@ -13,6 +11,7 @@ public class User {
 	private String login;
 	
 	private String passwd;
+	private Boolean isAdmin;
 	
 	private Set<String> groups = new HashSet<>();
 
@@ -64,11 +63,29 @@ public class User {
 		this.enabled = enabled;
 	}
 
+	
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Boolean getIsAdmin() {
+		return isAdmin;
+	}
+
+	public void setIsAdmin(Boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
 	public User merge(User user) {
 		this.enabled = user.enabled!=null?user.enabled:this.enabled;
 		this.username = user.username!=null?user.username:this.username;
 		this.login = user.login!=null?user.login:this.login;
 		this.groups = user.groups!=null?user.groups:this.groups;
+		this.isAdmin = user.isAdmin!=null?user.isAdmin:this.isAdmin;
 		return this;
 	}
 
