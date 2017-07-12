@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 public class Device implements Mergeable<Device>{
 	public static enum ConnectionStatus{
 		ONLINE,

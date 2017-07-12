@@ -2,9 +2,8 @@ package org.doomday.server.plugin.admin.ctrl;
 
 import java.util.Collection;
 
-import org.doomday.server.beans.User;
+import org.doomday.server.beans.Group;
 import org.doomday.server.model.IGroupRepository;
-import org.doomday.server.model.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,32 +13,29 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/admin/users")
+@RequestMapping("/admin/group")
 @CrossOrigin(origins="*")
-public class UsersCtrl {
+public class GroupCtrl {
 	
 	@Autowired
-	IUserRepository userRepository;
-	
-	@Autowired
-	IGroupRepository groupRepository;
+	IGroupRepository groupRepo;
 	
 	@RequestMapping(method=RequestMethod.POST,path="/save")
 	@ResponseBody
-	public User save(@RequestBody User user){
-		return userRepository.saveUser(user);
+	public Group saveGroup(@RequestBody Group group){
+		return groupRepo.saveGroup(group);
 	}
 	
 	@RequestMapping(method=RequestMethod.GET,path="/list")
 	@ResponseBody
-	public Collection<User> listUsers(){
-		return userRepository.listUsers();
+	public Collection<Group> listGroups(){
+		return groupRepo.listGroups();
 	}
 	
 	@RequestMapping(method=RequestMethod.POST,path="/remove")
 	@ResponseBody
-	public boolean remove (@RequestBody User user){
-		return userRepository.remove(user);
+	public boolean removeGroup(@RequestBody Group group){
+		return groupRepo.remove(group);
 	}
 	
 }

@@ -52,17 +52,7 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfi
 		return 27015;
 	}
 
-	@Bean
-	@Scope("prototype")
-	public ObjectMapper jsonMapper(){		
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
-		mapper.configure(Feature.IGNORE_UNKNOWN, true);
-		mapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_MISSING_VALUES, true);
-		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-		return mapper;
-	}
+	
 	
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

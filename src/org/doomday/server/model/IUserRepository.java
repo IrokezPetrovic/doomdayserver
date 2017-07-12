@@ -6,7 +6,7 @@ import org.doomday.server.beans.User;
 
 public interface IUserRepository {
 
-	User addUser(User user);
+	User saveUser(User user);
 
 	Collection<User> listUsers();
 

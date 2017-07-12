@@ -1,5 +1,8 @@
 package org.doomday.server.beans;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.doomday.server.misc.KeepAsJsonDeserializer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,11 +16,12 @@ public class Widget implements Cloneable{
 	@JsonProperty("class")	
 	private String widgetClass;
 	private String icon;
+	private Boolean enabled;
 	
 	@JsonRawValue
 	@JsonDeserialize(using=KeepAsJsonDeserializer.class)
 	private String config;
-	private String dashboardId;
+	private Set<String> dashboards = new HashSet<>();
 	public Widget() {
 		
 	}
@@ -52,13 +56,14 @@ public class Widget implements Cloneable{
 	}
 	public void setConfig(String config) {
 		this.config = config;
-	}
-	public String getDashboardId() {
-		return dashboardId;
-	}
-	public void setDashboardId(String dashboardId) {
-		this.dashboardId = dashboardId;
 	}	
+	public Set<String> getDashboards() {
+		return dashboards;
+	}
+	public void setDashboards(Set<String> dashboards) {
+		this.dashboards = dashboards;
+	}
+
 	public String getWidgetClass() {
 		return widgetClass;
 	}	
@@ -71,6 +76,16 @@ public class Widget implements Cloneable{
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
+		
+	
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public Widget clone(){
 		try {
 			return (Widget) super.clone();
@@ -78,6 +93,17 @@ public class Widget implements Cloneable{
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public Widget merge(Widget w) {
+		this.config = w.config!=null?w.config:this.config;
+		this.dashboards = w.dashboards!=null?w.dashboards:this.dashboards;
+		this.description = w.description!=null?w.description:this.description;
+		this.icon = w.icon!=null?w.icon:this.icon;
+		this.label = w.label!=null?w.label:this.label;
+		this.enabled = w.enabled!=null?w.enabled:this.enabled;
+		
+		return this;
 	}
 	
 	

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class DashboardMemRepository implements IDashboardRepository{
-	Set<Dashboard> dashboards = new HashSet<>();
+	//Set<Dashboard> dashboards = new HashSet<>();
 	Map<String, Dashboard> dashes = new HashMap<>();
 	
 	
@@ -42,7 +42,7 @@ public class DashboardMemRepository implements IDashboardRepository{
 			String line = "";
 			while((line=br.readLine())!=null){
 				Dashboard d = mapper.readValue(line, Dashboard.class);
-				dashboards.add(d);
+				//dashboards.add(d);
 				dashes.put(d.get_id(), d);
 			}
 			br.close();
@@ -87,9 +87,9 @@ public class DashboardMemRepository implements IDashboardRepository{
 	}
 
 	@Override
-	public boolean remove(Dashboard dashboard) {
-		eventBus.pub("/dashboard", new DashboardRemoveEvent(dashboard));
-		if (dashes.remove(dashboard.get_id()).get_id()==dashboard.get_id()){			
+	public boolean remove(Dashboard dashboard) {		
+		if (dashes.remove(dashboard.get_id()).get_id()==dashboard.get_id()){
+			eventBus.pub("/dashboard", new DashboardRemoveEvent(dashboard));
 			return true;
 		} else {
 			return false;

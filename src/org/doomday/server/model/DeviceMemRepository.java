@@ -1,18 +1,24 @@
 package org.doomday.server.model;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
+import org.doomday.server.beans.Dashboard;
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.event.DeviceForgetEvent;
-import org.doomday.server.event.DeviceProfileUpdateEvent;
 import org.doomday.server.eventbus.IEventBus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class DeviceMemRepository implements IDeviceRepository{
@@ -21,9 +27,44 @@ public class DeviceMemRepository implements IDeviceRepository{
 	@Autowired
 	IEventBus eventBus;
 	
+	@Autowired
+	ObjectMapper mapper;
+	
 	@PostConstruct
 	public void init(){
+		try{
+			FileReader fr = new FileReader("/tmp/devices.conf");
+			BufferedReader br = new BufferedReader(fr);		
+			String line = "";
+			while((line=br.readLine())!=null){
+				Device d = mapper.readValue(line, Device.class);
+				//dashboards.add(d);
+				devices.put(d.getId(), d);
+			}
+			br.close();
+		} catch (IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+		
+	@PreDestroy
+	public void destroy() {
+		try{
+			FileWriter fw = new FileWriter("/tmp/devices.conf");
+			devices.values()
+			.forEach(d->{
+				try {
+					fw.write(mapper.writeValueAsString(d)+"\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});		
+			fw.flush();
+			fw.close();
+		} catch(IOException e){
 			
+		}
 	}
 	
 	@Override

@@ -1,8 +1,12 @@
 package org.doomday.server.beans;
 
+import java.io.Serializable;
+import java.util.Collection;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Dashboard {
+public class Dashboard implements Cloneable,Serializable{	
+	private static final long serialVersionUID = -6432347898775302497L;
 	private String _id;
 	private String title;
 	private String icon;
@@ -10,6 +14,8 @@ public class Dashboard {
 	private String[] accessTo;
 	@JsonIgnore
 	private String[] allowTo;
+	
+	private Collection<Widget> widgets;
 	public Dashboard() {
 		super();
 	}
@@ -61,6 +67,23 @@ public class Dashboard {
 		this.allowTo = allowTo;
 	}
 	
+	
+	public Collection<Widget> getWidgets() {
+		return widgets;
+	}
+	
+	public void setWidgets(Collection<Widget> widgets) {
+		this.widgets = widgets;
+	}
+	
+	public Dashboard clone(){
+		try {
+			return (Dashboard) super.clone();
+		} catch (CloneNotSupportedException e) {		
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	
 	

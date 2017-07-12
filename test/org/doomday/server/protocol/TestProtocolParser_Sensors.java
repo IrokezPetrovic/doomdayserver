@@ -29,7 +29,7 @@ public class TestProtocolParser_Sensors {
 	@Test
 	public void testSensorIntMsg(){
 		pp.read("ACCEPT");
-		pp.read("SENSOR INT SENSOR1 (10,30)");
+		pp.read("SENSOR SENSOR1 INT (10,30)");
 		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
@@ -43,7 +43,7 @@ public class TestProtocolParser_Sensors {
 	@Test
 	public void testSensorFloatMsg(){
 		pp.read("ACCEPT");
-		pp.read("SENSOR FLOAT SENSOR1 (3.14,5.15)");
+		pp.read("SENSOR SENSOR1 FLOAT (3.14,5.15)");
 		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
@@ -58,7 +58,7 @@ public class TestProtocolParser_Sensors {
 	@Test
 	public void testSensorStrMsg(){
 		pp.read("ACCEPT");
-		pp.read("SENSOR STR SENSOR1");
+		pp.read("SENSOR SENSOR1 STR");
 		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
@@ -69,7 +69,7 @@ public class TestProtocolParser_Sensors {
 	@Test
 	public void testSensorBoolMsg(){
 		pp.read("ACCEPT");
-		pp.read("SENSOR BOOL SENSOR1");
+		pp.read("SENSOR SENSOR1 BOOL");
 		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
@@ -80,7 +80,7 @@ public class TestProtocolParser_Sensors {
 	@Test
 	public void testSensorValMsg(){
 		pp.read("ACCEPT");
-		pp.read("SENSOR VAL SENSOR1 (OPTION1,OPTION2,OPTION3)");
+		pp.read("SENSOR SENSOR1 VAL (OPTION1,OPTION2,OPTION3)");
 		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
@@ -96,7 +96,7 @@ public class TestProtocolParser_Sensors {
 	@Test
 	public void testSensorFlagMsg(){
 		pp.read("ACCEPT");
-		pp.read("SENSOR FLAG SENSOR1 (OPTION1,OPTION2,OPTION3)");
+		pp.read("SENSOR SENSOR1 FLAG (OPTION1,OPTION2,OPTION3)");
 		DeviceProfile meta = device.getProfile();
 		assertNotNull(meta);
 		SensorMeta sm = meta.getSensor("SENSOR1");				
