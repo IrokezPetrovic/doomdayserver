@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -20,10 +19,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Configuration
 @ComponentScan("org.doomday.server")

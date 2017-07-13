@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,13 +74,20 @@ public class WidgetMemRepository implements IWidgetRepository{
 		Optional<Widget> saved = widgets.stream()
 		.filter(widget->widget.get_id().equals(w.get_id()))
 		.findFirst();
+		try{
+		return saved.get().merge(w);
+		} catch(NoSuchElementException e){
+			widgets.add(w);
+			return w;
+		}
+		/*
 		if (saved.get() != null){
 			return saved.get().merge(w);
 		} else {			
 			widgets.add(w);
 			return w;
 		}
-		
+		*/
 		
 	}
 

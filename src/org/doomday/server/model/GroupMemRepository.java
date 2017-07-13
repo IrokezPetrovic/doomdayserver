@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.doomday.server.beans.Dashboard;
 import org.doomday.server.beans.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

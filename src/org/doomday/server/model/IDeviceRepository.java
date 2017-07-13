@@ -11,7 +11,8 @@ public interface IDeviceRepository {
 
 	Collection<Device> listDevices();
 
-	void updateDevice(Device d);
+	Device updateDevice(Device d);
 	void forget(Device d);
+	boolean removeDevice(String id);
 
 }

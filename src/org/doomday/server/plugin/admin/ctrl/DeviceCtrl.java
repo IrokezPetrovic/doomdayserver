@@ -1,22 +1,29 @@
 package org.doomday.server.plugin.admin.ctrl;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.doomday.server.beans.device.Device;
+import org.doomday.server.beans.device.DeviceProfile;
 import org.doomday.server.model.IDeviceRepository;
+import org.doomday.server.model.IProfileRepository;
 import org.doomday.server.model.ISensorValueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 @Controller
-@RequestMapping(path="/admin/device/")
+@RequestMapping(path="/admin/devices")
 @CrossOrigin(origins="*")
 public class DeviceCtrl {
 	
@@ -24,26 +31,59 @@ public class DeviceCtrl {
 	IDeviceRepository deviceRepository;
 	
 	@Autowired
+	IProfileRepository profileRepo;
+	
+	@Autowired
 	ISensorValueRepository sensorValues;
 	
-	@RequestMapping(method=RequestMethod.GET,path="list")
+	@Autowired
+	ObjectMapper mapper;
+	
+	@RequestMapping(method=RequestMethod.GET)
 	@ResponseBody
-	Collection<Device> listDevices(){
+	Collection<JsonNode> listDevices(){
+		
 		Collection<Device> devices = deviceRepository.listDevices();
-		devices.forEach(device->{
-			if (device.getProfile()!=null){
-				Map<String,String> values = new HashMap<>();
-				
-				device.getProfile().getSensors().
-				forEach(s->{
-					values.put(s.getName(), sensorValues.getValue(device.getId(),s.getName()));
-				});
-				device.setValues(values);				
-			}
-		});
-		return devices;
+		return devices.stream()
+		.map(device->{
+			ObjectNode node = mapper.valueToTree(device);
+			DeviceProfile profile = profileRepo.getProfile(device.getDevClass());
+			node.set("profile", mapper.valueToTree(profile));
+			return node;			
+			
+		}).collect(Collectors.toSet());						
 	}
 	
+	@RequestMapping(method=RequestMethod.GET,path="/{deviceId}")
+	@ResponseBody
+	Device getDevice(@PathVariable String deviceId){
+		Device d = deviceRepository.getDevice(deviceId);
+		if (d==null) return null;
+		return null;
+	}
+	
+	
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	Device updateDevice(@RequestBody Device device){
+		return deviceRepository.updateDevice(device);
+	}
+		
+	
+	
+	@RequestMapping(method=RequestMethod.DELETE)
+	@ResponseBody
+	boolean removeDevice(@RequestParam String id){
+		return false;
+	}
+	
+	
+	@RequestMapping(method=RequestMethod.DELETE,path="/{deviceId:.+}")
+	@ResponseBody
+	boolean removeDeviceById(@PathVariable String deviceId){
+		return deviceRepository.removeDevice(deviceId);		
+	}
+	/*
 	
 	@RequestMapping(method=RequestMethod.POST,path="update")
 	@ResponseBody
@@ -64,4 +104,5 @@ public class DeviceCtrl {
 		deviceRepository.forget(d);
 		return true;
 	}
+	*/
 }

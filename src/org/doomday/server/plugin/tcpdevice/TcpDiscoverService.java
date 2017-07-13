@@ -5,15 +5,14 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.Selector;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.doomday.server.beans.device.Device;
+import org.doomday.server.beans.device.Device.ConnectionStatus;
 import org.doomday.server.event.DeviceDiscoveredEvent;
-import org.doomday.server.eventbus.EventBus;
+import org.doomday.server.event.DeviceUpdatedEvent;
 import org.doomday.server.eventbus.IEventBus;
 import org.doomday.server.model.IDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,7 @@ public class TcpDiscoverService implements Runnable{
 	@PreDestroy	
 	public void destroy(){
 		mcastSock.close();
-		t.stop();					
+		t.interrupt();					
 	}
 		
 	@Override
@@ -92,10 +91,13 @@ public class TcpDiscoverService implements Runnable{
 
 	private void onDiscover(String ipAddr,String devClass, String devSerial){		
 		Device device = deviceRepository.getDevice(devClass,devSerial);		
-		eventBus.pub("/device", new DeviceDiscoveredEvent(device));
-		if (device.getPincode()!=null&&device.getPincode().length()>0){
+		
+		eventBus.pub("/device", new DeviceUpdatedEvent(device));
+		device.setConnectionStatus(ConnectionStatus.DISCOVERED);	
+		if (device.getPincode()!=null&&device.getPincode().length()>0){			
 			tcpWorker.appendDevice(ipAddr,device);
 		}
+		
 	}
 
 	

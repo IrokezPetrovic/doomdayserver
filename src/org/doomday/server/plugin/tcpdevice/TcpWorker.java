@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -24,6 +23,7 @@ import javax.annotation.PreDestroy;
 import org.doomday.server.ITransport;
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.event.DeviceForgetEvent;
+import org.doomday.server.event.DeviceUpdatedEvent;
 import org.doomday.server.eventbus.IEventBus;
 import org.doomday.server.protocol.IProtocolProcessor;
 import org.doomday.server.protocol.IProtocolProcessorFactory;
@@ -57,11 +57,12 @@ public class TcpWorker implements ITcpWorker,Runnable,ITransport{
 			for (SelectionKey k:processors.keySet()){
 				IProtocolProcessor p = processors.get(k);
 				if (p.getDevice().getId().equals(id)){
-					System.out.println("Close chan for "+id);
-					processors.remove(k);
-					okMap.remove(k);
-					k.channel().close();
-					k.cancel();
+					//System.out.println("Close chan for "+id);
+					//processors.remove(k);
+					//okMap.remove(k);
+					closeChan(k);
+//					k.channel().close();
+//					k.cancel();
 					break;
 				}
 			}
@@ -84,7 +85,7 @@ public class TcpWorker implements ITcpWorker,Runnable,ITransport{
 			};
 		});
 		
-		t.stop();
+		t.interrupt();
 	}
 	Selector selector = null;
 	
@@ -126,11 +127,14 @@ public class TcpWorker implements ITcpWorker,Runnable,ITransport{
 		if (pp==null)
 			return;
 		processors.remove(key);
+		okMap.remove(key);
 		Device d = pp.getDevice();
 		d.setConnectionStatus(Device.ConnectionStatus.OFFLINE);
+		eventBus.pub("/device", new DeviceUpdatedEvent(d));
 		SocketChannel chan = (SocketChannel) key.channel();
 		chan.close();			
 		key.cancel();
+		
 		System.out.println("Device closed");		
 	}
 

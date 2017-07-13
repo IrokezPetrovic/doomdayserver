@@ -3,14 +3,12 @@ package org.doomday.server.beans.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-
-public class Device implements Mergeable<Device>{
+public class Device{
 	public static enum ConnectionStatus{
-		ONLINE,
 		OFFLINE,
-		DISCOVERED
+		DISCOVERED,		
+		ONLINE 
 	}
 	private String id;
 	private String pincode;
@@ -18,23 +16,22 @@ public class Device implements Mergeable<Device>{
 	
 	private String devSerial;
 	private String devClass;
-	
-	@JsonProperty(value="profile")
-	private DeviceProfile meta;
+		
 	
 	private Map<String,String> sensorData = new HashMap<>();
-	private ConnectionStatus connectionStatus = ConnectionStatus.DISCOVERED;
+	private ConnectionStatus connectionStatus = ConnectionStatus.OFFLINE;
 	private Map<String, String> values;
 
-	public void merge(Device d) {
+	public Device merge(Device d) {
 		this.pincode = d.pincode!=null?d.pincode:this.pincode;
-		this.name = d.name!=null?d.name:this.name;
-		this.meta = d.getProfile()!=null?d.getProfile():this.meta;		
+		this.name = d.name!=null?d.name:this.name;	
+		return this;
 	}
 		
 	public Device(){
 		
 	}
+	
 	public Device(String devClass, String devSerial) {
 		this.devClass = devClass;
 		this.devSerial = devSerial;
@@ -52,9 +49,7 @@ public class Device implements Mergeable<Device>{
 		
 	}
 
-	public DeviceProfile getProfile() {		
-		return meta;
-	}
+	
 
 	public void setData(String sensorName, String sensorValue) {
 		sensorData.put(sensorName, sensorValue);
@@ -65,9 +60,7 @@ public class Device implements Mergeable<Device>{
 		return devSerial;
 	}
 
-	public void setProfile(DeviceProfile meta) {
-		this.meta = meta;		
-	}
+	
 
 	public void setPincode(String pincode) {
 		this.pincode = pincode;

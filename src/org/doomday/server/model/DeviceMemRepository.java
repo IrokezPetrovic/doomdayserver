@@ -8,12 +8,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.doomday.server.beans.Dashboard;
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.event.DeviceForgetEvent;
+import org.doomday.server.event.DeviceUpdatedEvent;
+import org.doomday.server.eventbus.EventBus;
 import org.doomday.server.eventbus.IEventBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +28,10 @@ public class DeviceMemRepository implements IDeviceRepository{
 	@Autowired
 	ObjectMapper mapper;
 	
-	@PostConstruct
+	@Autowired
+	IProfileRepository profileRepo;
+	
+//	@PostConstruct
 	public void init(){
 		try{
 			FileReader fr = new FileReader("/tmp/devices.conf");
@@ -38,6 +39,7 @@ public class DeviceMemRepository implements IDeviceRepository{
 			String line = "";
 			while((line=br.readLine())!=null){
 				Device d = mapper.readValue(line, Device.class);
+				
 				//dashboards.add(d);
 				devices.put(d.getId(), d);
 			}
@@ -48,7 +50,7 @@ public class DeviceMemRepository implements IDeviceRepository{
 	}
 	
 		
-	@PreDestroy
+//	@PreDestroy
 	public void destroy() {
 		try{
 			FileWriter fw = new FileWriter("/tmp/devices.conf");
@@ -73,11 +75,13 @@ public class DeviceMemRepository implements IDeviceRepository{
 	}
 	
 	@Override
-	public void updateDevice(Device d){		
+	public Device updateDevice(Device d){		
 		Device target = devices.get(d.getId());	
 		if (target!=null){
 			target.merge(d);
+			eventBus.pub("/device", new DeviceUpdatedEvent(target));
 		}
+		return target;
 		
 	}
 	
@@ -89,7 +93,7 @@ public class DeviceMemRepository implements IDeviceRepository{
 			d.setName(d.getId());
 			devices.put(d.getId(), d);
 		}
-		//d.setPincode("1234");
+		//d.setPincode("12345");
 		return d;
 	}
 	
@@ -105,5 +109,18 @@ public class DeviceMemRepository implements IDeviceRepository{
 		}
 		
 	}
+
+	@Override
+	public boolean removeDevice(String id) {
+		Device forRemove = devices.remove(id);
+		if (forRemove!=null){
+			eventBus.pub("/device", new DeviceForgetEvent(forRemove));
+			return true;
+		};
+		return false;
+	}
+
+
+	
 	
 }

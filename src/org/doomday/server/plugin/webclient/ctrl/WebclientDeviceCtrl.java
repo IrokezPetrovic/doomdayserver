@@ -28,6 +28,8 @@ public class WebclientDeviceCtrl {
 	@RequestMapping(method=RequestMethod.GET,path="/list")
 	@ResponseBody
 	Collection<DeviceBean> listDevices(){
+		return null;
+		/*
 		return deviceRepo.listDevices().stream()
 		.filter(d->d.getProfile()!=null)
 		.map(d->{			
@@ -39,6 +41,7 @@ public class WebclientDeviceCtrl {
 			return bean;
 		})		
 		.collect(Collectors.toSet());
+		*/
 	}
 	
 	

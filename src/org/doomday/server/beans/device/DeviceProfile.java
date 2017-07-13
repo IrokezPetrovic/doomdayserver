@@ -27,17 +27,14 @@ public class DeviceProfile {
 	public TriggerMeta getTrigger(String name) {
 		return triggersMap.get(name);
 	}
+		
 	
-	public Collection<SensorMeta> getSensors() {
-		return sensorsMap.values();
+	
+	public HashMap<String, TriggerMeta> getTriggers() {
+		return triggersMap;
 	}
-	
-	
-	
-	public Collection<TriggerMeta> getTriggers() {
-		return triggersMap.values();
+	public HashMap<String, SensorMeta> getSensors() {
+		return sensorsMap;
 	}
-	
-	
 	
 }
