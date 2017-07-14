@@ -48,7 +48,7 @@ public class UserMemRepository implements IUserRepository{
 	@PreDestroy
 	public void preDestroy(){
 		try{
-			FileWriter fw = new FileWriter("/tmp/groups.json");			
+			FileWriter fw = new FileWriter("/tmp/users.json");			
 			users.values()
 			.forEach(u->{
 				try {

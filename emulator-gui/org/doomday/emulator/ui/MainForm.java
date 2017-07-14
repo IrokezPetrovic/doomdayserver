@@ -192,7 +192,7 @@ public class MainForm extends JFrame implements IMainForm{
 		
 		mcastIp = new JTextField();						
 		mcastIp.setPreferredSize(new Dimension(100, 20));
-		mcastIp.setText("239.12.13.14");
+		mcastIp.setText("239.141.12.12");
 		mcastPort = new JTextField();
 		mcastPort.setText("27015");
 		ipPort = new JTextField();		

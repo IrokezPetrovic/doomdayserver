@@ -8,7 +8,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.doomday.server.beans.device.Device;
+import org.doomday.server.beans.device.Device.ConnectionStatus;
 import org.doomday.server.event.DeviceForgetEvent;
 import org.doomday.server.event.DeviceUpdatedEvent;
 import org.doomday.server.eventbus.EventBus;
@@ -31,7 +35,7 @@ public class DeviceMemRepository implements IDeviceRepository{
 	@Autowired
 	IProfileRepository profileRepo;
 	
-//	@PostConstruct
+	@PostConstruct
 	public void init(){
 		try{
 			FileReader fr = new FileReader("/tmp/devices.conf");
@@ -39,8 +43,7 @@ public class DeviceMemRepository implements IDeviceRepository{
 			String line = "";
 			while((line=br.readLine())!=null){
 				Device d = mapper.readValue(line, Device.class);
-				
-				//dashboards.add(d);
+				d.setConnectionStatus(ConnectionStatus.OFFLINE);
 				devices.put(d.getId(), d);
 			}
 			br.close();
@@ -50,7 +53,7 @@ public class DeviceMemRepository implements IDeviceRepository{
 	}
 	
 		
-//	@PreDestroy
+	@PreDestroy
 	public void destroy() {
 		try{
 			FileWriter fw = new FileWriter("/tmp/devices.conf");
@@ -65,7 +68,7 @@ public class DeviceMemRepository implements IDeviceRepository{
 			fw.flush();
 			fw.close();
 		} catch(IOException e){
-			
+			e.printStackTrace();
 		}
 	}
 	

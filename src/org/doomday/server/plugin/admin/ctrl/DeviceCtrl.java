@@ -1,10 +1,13 @@
 package org.doomday.server.plugin.admin.ctrl;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.DeviceProfile;
+import org.doomday.server.beans.device.sensor.SensorMeta;
 import org.doomday.server.model.IDeviceRepository;
 import org.doomday.server.model.IProfileRepository;
 import org.doomday.server.model.ISensorValueRepository;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.gs.collections.impl.tuple.Tuples;
 
 @Controller
 @RequestMapping(path="/admin/devices")
@@ -48,7 +52,16 @@ public class DeviceCtrl {
 		.map(device->{
 			ObjectNode node = mapper.valueToTree(device);
 			DeviceProfile profile = profileRepo.getProfile(device.getDevClass());
-			node.set("profile", mapper.valueToTree(profile));
+			node.set("profile", mapper.valueToTree(profile));			
+			if (profile!=null){
+				Map<String, String> values = profile.getSensors().values().stream()
+				.collect(Collectors.toMap(sensor->{
+					return sensor.getName();
+				}, sensor->{
+					return sensorValues.getValue(device.getId(), sensor.getName());					
+				}));
+				node.set("values", mapper.valueToTree(values));
+			}
 			return node;			
 			
 		}).collect(Collectors.toSet());						

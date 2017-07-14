@@ -18,7 +18,7 @@ public class JsonConfig {
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
 		mapper.configure(Feature.IGNORE_UNKNOWN, true);
 		mapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_MISSING_VALUES, true);
-		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);		
 		return mapper;
 	}
 }
