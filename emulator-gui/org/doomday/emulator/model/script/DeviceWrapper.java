@@ -1,7 +1,6 @@
 package org.doomday.emulator.model.script;
 
 import org.doomday.emulator.model.DeviceModel;
-import org.doomday.emulator.model.Sensor;
 
 public class DeviceWrapper {
 

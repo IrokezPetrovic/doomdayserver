@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.doomday.server.plugin.webclient.websocket.WebClientWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -52,7 +51,7 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfi
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		
-		registry.addHandler(ctx.getBean(WebClientWebSocket.class), "/webclient/event.ws");
+//		registry.addHandler(ctx.getBean(WebClientWebSocket.class), "/webclient/event.ws");
 	}
 	
 	@Bean(name="multipartResolver")

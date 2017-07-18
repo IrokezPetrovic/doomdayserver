@@ -1,11 +1,9 @@
 package org.doomday.server.plugin.webclient.ctrl;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.doomday.server.beans.Dashboard;
 import org.doomday.server.model.IDashboardRepository;
-import org.doomday.server.model.IWidgetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,25 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@Controller
-@RequestMapping("/webclient/dashboard")
+@Controller("webclient-dashboard-controller")
+@RequestMapping("/webclient/dashboards")
 @CrossOrigin(origins="*")
-public class WebclientDashboardCtrl {
+public class DashboardCtrl {
 	
 	@Autowired
-	IDashboardRepository dashboardRepo;
+	IDashboardRepository dashboardRepository;
 	
-	@Autowired
-	IWidgetRepository widgetRepo;
-	@RequestMapping(method=RequestMethod.GET,path="/list")
+	@RequestMapping(method=RequestMethod.GET)
 	@ResponseBody
 	public Collection<Dashboard> listDashboards(){
-		return dashboardRepo.listDashboards().stream()
-				.map(d->{
-					Dashboard dashbaord = d.clone();
-					dashbaord.setWidgets(widgetRepo.getWidgets(dashbaord.get_id()));
-					return dashbaord;
-				}).collect(Collectors.toList());
+		return dashboardRepository.listDashboards();
 	}
-
 }
