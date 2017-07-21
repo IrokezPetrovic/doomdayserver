@@ -11,7 +11,6 @@ import javax.annotation.PreDestroy;
 
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.Device.ConnectionStatus;
-import org.doomday.server.event.DeviceDiscoveredEvent;
 import org.doomday.server.event.DeviceUpdatedEvent;
 import org.doomday.server.eventbus.IEventBus;
 import org.doomday.server.model.IDeviceRepository;

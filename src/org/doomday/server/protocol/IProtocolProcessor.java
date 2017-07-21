@@ -12,4 +12,6 @@ public interface IProtocolProcessor {
 	
 	public void read(String content);
 
+	void send(String string);
+
 }

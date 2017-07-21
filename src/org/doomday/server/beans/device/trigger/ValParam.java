@@ -2,24 +2,23 @@ package org.doomday.server.beans.device.trigger;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class ValParam extends TriggerParam {
 	
-	private Set<String> values;
+	private List<String> values;
 	public ValParam(String name,String[] values) {
 		super(name);
-		this.values = new HashSet<>(Arrays.asList(values));
+		this.values = Arrays.asList(values);
 	}
 	@Override
 	public boolean validate(String v) {
 		return values.contains(v);
 	}
 	
-	public Set<String> getOptions() {
-		return Collections.unmodifiableSet(values);
+	public List<String> getOptions() {
+		return Collections.unmodifiableList(values);
 	}
 	@Override
 	public String getType() {

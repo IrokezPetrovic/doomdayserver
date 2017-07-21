@@ -24,6 +24,12 @@ public class ValSensor extends Sensor{
 
 	@Override
 	public boolean validate(String value) {
-		return value!=null&&options.contains(value);
+		try{
+			int intVal = Integer.parseInt(value);
+			return intVal>=0&&intVal<=options.size();
+		} catch(NumberFormatException e) {
+			return options.contains(value);
+		}
+		
 	}
 }

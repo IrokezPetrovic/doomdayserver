@@ -2,12 +2,10 @@ package org.doomday.server.plugin.admin.ctrl;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.DeviceProfile;
-import org.doomday.server.beans.device.sensor.SensorMeta;
 import org.doomday.server.model.IDeviceRepository;
 import org.doomday.server.model.IProfileRepository;
 import org.doomday.server.model.ISensorValueRepository;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.gs.collections.impl.tuple.Tuples;
 
 @Controller
 @RequestMapping(path="/admin/devices")

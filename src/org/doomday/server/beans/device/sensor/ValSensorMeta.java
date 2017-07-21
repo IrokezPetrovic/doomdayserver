@@ -2,15 +2,14 @@ package org.doomday.server.beans.device.sensor;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class ValSensorMeta extends SensorMeta{
-	private Set<String> values;
+	private List<String> values;
 	
 	public ValSensorMeta(String name,String[] values) {
 		super(name);		
-		this.values = new HashSet<>(Arrays.asList(values)); 
+		this.values = Arrays.asList(values); 
 	}
 	
 	@Override
@@ -18,8 +17,8 @@ public class ValSensorMeta extends SensorMeta{
 		return values.contains(sensorValue);
 	}
 
-	public Set<String> getOptions() {
-		return Collections.unmodifiableSet(values);
+	public List<String> getOptions() {
+		return Collections.unmodifiableList(values);
 	}
 
 	@Override

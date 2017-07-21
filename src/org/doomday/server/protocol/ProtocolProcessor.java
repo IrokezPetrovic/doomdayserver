@@ -323,5 +323,12 @@ public class ProtocolProcessor implements IProtocolProcessor{
 		
 	}
 
+
+	@Override
+	public void send(String msg) {
+		msgQueue.add(msg);
+		
+	}
+
 	
 }

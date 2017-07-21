@@ -7,5 +7,5 @@ public interface IProtocolProcessorFactory {
 	
 
 	IProtocolProcessor createProcessor(Device device, ITransport transport);
-
+	IProtocolProcessor getExistsProcessor(String deviceId);
 }

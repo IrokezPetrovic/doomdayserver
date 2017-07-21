@@ -2,15 +2,14 @@ package org.doomday.server.beans.device.trigger;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class FlagParam extends TriggerParam {
-	private Set<String> flags;
+	private List<String> flags;
 	public FlagParam(String name,String[] flags) {
 		super(name);
-		this.flags = new HashSet<>(Arrays.asList(flags));
+		this.flags = Arrays.asList(flags);
 	}
 	@Override
 	public boolean validate(String v) {
@@ -18,8 +17,8 @@ public class FlagParam extends TriggerParam {
 		return flags.containsAll(Arrays.asList(targetFlags));
 		
 	}
-	public Set<String> getFlags() {
-		return Collections.unmodifiableSet(flags);
+	public List<String> getFlags() {
+		return Collections.unmodifiableList(flags);
 	}
 	@Override
 	public String getType() {

@@ -15,7 +15,6 @@ import org.doomday.server.beans.device.Device;
 import org.doomday.server.beans.device.Device.ConnectionStatus;
 import org.doomday.server.event.DeviceForgetEvent;
 import org.doomday.server.event.DeviceUpdatedEvent;
-import org.doomday.server.eventbus.EventBus;
 import org.doomday.server.eventbus.IEventBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
